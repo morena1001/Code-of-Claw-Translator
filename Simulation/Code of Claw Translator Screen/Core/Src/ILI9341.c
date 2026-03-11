@@ -11,8 +11,7 @@
  * INITIALIZATION FUNCTION
  */
 
-//HAL_StatusTypeDef ILI9341_Init (ILI9341_t* device, SPI_HandleTypeDef* spi_handle, GPIO_TypeDef* cs_port, uint16_t cs_pin, GPIO_TypeDef* rs_port, uint16_t rs_pin, GPIO_TypeDef* dc_port, uint16_t dc_pin) {
-int* ILI9341_Init (ILI9341_t* device, SPI_HandleTypeDef* spi_handle, GPIO_TypeDef* cs_port, uint16_t cs_pin, GPIO_TypeDef* rs_port, uint16_t rs_pin, GPIO_TypeDef* dc_port, uint16_t dc_pin) {
+HAL_StatusTypeDef ILI9341_Init (ILI9341_t* device, SPI_HandleTypeDef* spi_handle, GPIO_TypeDef* cs_port, uint16_t cs_pin, GPIO_TypeDef* rs_port, uint16_t rs_pin, GPIO_TypeDef* dc_port, uint16_t dc_pin) {
 	device->spi_handle = spi_handle;
 	device->cs_port = cs_port;
 	device->cs_pin = cs_pin;
@@ -21,28 +20,46 @@ int* ILI9341_Init (ILI9341_t* device, SPI_HandleTypeDef* spi_handle, GPIO_TypeDe
 	device->dc_port = dc_port;
 	device->dc_pin = dc_pin;
 
-	HAL_StatusTypeDef status = HAL_TIMEOUT;
+	HAL_StatusTypeDef status = HAL_ERROR;
 
 	// Read device ID information to make sure connection is made
 	uint8_t data_buffer[4] = { 0 };
 	status = ILI9341_Receive (device, _24_BITS, ILI9341_COMMAND_READ_ID, data_buffer);
-
-
+	for (uint8_t i = 0; i < 4; i++)	{
+		if (data_buffer[i] == 0)	status = HAL_ERROR;
+	}
 
 	// Reset device commands and parameters
 	status = ILI9341_Reset (device);
+	HAL_Delay (5);
 
-	return data_buffer;
-//	return status;
+	status = ILI9341_Sleep_Out (device);
+	HAL_Delay (5);
+
+	status = ILI9341_Display_On (device);
+
+	// SET SCREEN COLOR
+
+	// SET TEXT COLOR
+
+	return status;
 }
 
 /*
  * HELPER FUNCTIONS
  */
+
 HAL_StatusTypeDef ILI9341_Reset (ILI9341_t* device) {
 	return ILI9341_Transmit (device, ILI9341_COMMAND_RESET);
 }
 
+HAL_StatusTypeDef ILI9341_Sleep_Out (ILI9341_t* device) {
+	return ILI9341_Transmit (device, ILI9341_COMMAND_SLEEP_OUT);
+}
+
+HAL_StatusTypeDef ILI9341_Display_On (ILI9341_t* device) {
+	return ILI9341_Transmit (device, ILI9341_COMMAND_DISPLAY_ON);
+}
 
 /*
  * LOW-LEVEL FUNCTIONS

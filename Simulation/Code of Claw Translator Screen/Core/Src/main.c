@@ -22,8 +22,8 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "stdio.h"
-#include "ILI9341.h"
 #include "stdlib.h"
+#include "ILI9341.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -97,11 +97,11 @@ int main(void)
   MX_USART2_UART_Init();
   MX_SPI2_Init();
   /* USER CODE BEGIN 2 */
-  int* data_buffer = malloc (sizeof (int) * 4);
   sprintf (message, "HELLO\r\n");
   HAL_UART_Transmit (&huart2, (uint8_t *) message, 50, 100);
-  data_buffer = ILI9341_Init(&ili9341, &hspi2, CS_GPIO_Port, CS_Pin, RS_GPIO_Port, RS_Pin, DC_GPIO_Port, DC_Pin);
-  sprintf (message, "%d %d %d %d\r\n", data_buffer[0], data_buffer[1], data_buffer[2], data_buffer[3]);
+  HAL_StatusTypeDef stat = ILI9341_Init(&ili9341, &hspi2, CS_GPIO_Port, CS_Pin, RS_GPIO_Port, RS_Pin, DC_GPIO_Port, DC_Pin);
+//  sprintf (message, "%d %d %d %d\r\n", data_buffer[0], data_buffer[1], data_buffer[2], data_buffer[3]);
+  sprintf (message, "%s\r\n", stat == HAL_OK ? "YIPEEEEE" : "NOOOOOOOOOOO");
   HAL_UART_Transmit (&huart2, (uint8_t *) message, 50, 100);
   /* USER CODE END 2 */
 

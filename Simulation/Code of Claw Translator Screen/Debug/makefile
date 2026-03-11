@@ -60,8 +60,8 @@ all: main-build
 main-build: Code\ of\ Claw\ Translator\ Screen.elf secondary-outputs
 
 # Tool invocations
-Code\ of\ Claw\ Translator\ Screen.elf Code\ of\ Claw\ Translator\ Screen.map: $(OBJS) $(USER_OBJS) C:\Users\josue\STM32CubeIDE\workspace_1.16.0\Code\ of\ Claw\ Translator\ Screen\STM32F302R8TX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-gcc -o "Code of Claw Translator Screen.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"C:\Users\josue\STM32CubeIDE\workspace_1.16.0\Code of Claw Translator Screen\STM32F302R8TX_FLASH.ld" --specs=nosys.specs -Wl,-Map="Code of Claw Translator Screen.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Code\ of\ Claw\ Translator\ Screen.elf Code\ of\ Claw\ Translator\ Screen.map: $(OBJS) $(USER_OBJS) C:\Users\josue\Code-of-Claw-Translator\Simulation\Code\ of\ Claw\ Translator\ Screen\STM32F302R8TX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-gcc -o "Code of Claw Translator Screen.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"C:\Users\josue\Code-of-Claw-Translator\Simulation\Code of Claw Translator Screen\STM32F302R8TX_FLASH.ld" --specs=nosys.specs -Wl,-Map="Code of Claw Translator Screen.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 

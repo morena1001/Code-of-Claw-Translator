@@ -20,8 +20,11 @@ enum read_length { _8_BITS = 1, _24_BITS = 4, _32_BITS = 5 };
  * REGISTERS
  */
 
-#define ILI9341_COMMAND_RESET		0x01
-#define ILI9341_COMMAND_READ_ID		0x04
+#define ILI9341_COMMAND_RESET			0x01
+#define ILI9341_COMMAND_READ_ID			0x04
+#define ILI9341_COMMAND_SLEEP_OUT		0x11
+#define ILI9341_COMMAND_DISPLAY_OFF		0x28
+#define ILI9341_COMMAND_DISPLAY_ON		0x29
 
 
 /*
@@ -38,14 +41,15 @@ typedef struct {
  * INITIALIZATION FUNCTION
  */
 
-//HAL_StatusTypeDef ILI9341_Init (ILI9341_t* device, SPI_HandleTypeDef* spi_handle, GPIO_TypeDef* cs_port, uint16_t cs_pin, GPIO_TypeDef* rs_port, uint16_t rs_pin, GPIO_TypeDef* dc_port, uint16_t dc_pin);
-int* ILI9341_Init (ILI9341_t* device, SPI_HandleTypeDef* spi_handle, GPIO_TypeDef* cs_port, uint16_t cs_pin, GPIO_TypeDef* rs_port, uint16_t rs_pin, GPIO_TypeDef* dc_port, uint16_t dc_pin);
+HAL_StatusTypeDef ILI9341_Init (ILI9341_t* device, SPI_HandleTypeDef* spi_handle, GPIO_TypeDef* cs_port, uint16_t cs_pin, GPIO_TypeDef* rs_port, uint16_t rs_pin, GPIO_TypeDef* dc_port, uint16_t dc_pin);
 
 /*
  * HELPER FUNCTIONS
  */
-HAL_StatusTypeDef ILI9341_Reset (ILI9341_t* device);
 
+HAL_StatusTypeDef ILI9341_Reset (ILI9341_t* device);
+HAL_StatusTypeDef ILI9341_Sleep_Out (ILI9341_t* device);
+HAL_StatusTypeDef ILI9341_Display_On (ILI9341_t* device);
 
 /*
  * LOW-LEVEL FUNCTIONS
