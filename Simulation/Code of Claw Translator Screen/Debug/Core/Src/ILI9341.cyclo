@@ -1,6 +1,11 @@
-../Core/Src/ILI9341.c:14:19:ILI9341_Init	3
-../Core/Src/ILI9341.c:53:19:ILI9341_Reset	1
-../Core/Src/ILI9341.c:57:19:ILI9341_Sleep_Out	1
-../Core/Src/ILI9341.c:61:19:ILI9341_Display_On	1
-../Core/Src/ILI9341.c:69:19:ILI9341_Transmit	1
-../Core/Src/ILI9341.c:77:19:ILI9341_Receive	1
+../Core/Src/ILI9341.c:15:19:ILI9341_Init	3
+../Core/Src/ILI9341.c:58:19:ILI9341_Reset	1
+../Core/Src/ILI9341.c:62:19:ILI9341_Sleep_Out	1
+../Core/Src/ILI9341.c:66:19:ILI9341_Display_On	1
+../Core/Src/ILI9341.c:70:19:ILI9341_Set_Column_Address	1
+../Core/Src/ILI9341.c:80:19:ILI9341_Set_Page_Address	1
+../Core/Src/ILI9341.c:90:19:ILI9341_Write_Pixel	1
+../Core/Src/ILI9341.c:103:19:ILI9341_Transmit	1
+../Core/Src/ILI9341.c:111:19:ILI9341_Transmit_Data	1
+../Core/Src/ILI9341.c:122:19:ILI9341_Transmit_Irregular_Data	1
+../Core/Src/ILI9341.c:133:19:ILI9341_Receive	1
