@@ -21,34 +21,57 @@ HAL_StatusTypeDef ILI9341_Init (ILI9341_t* device, SPI_HandleTypeDef* spi_handle
 	device->dc_port = dc_port;
 	device->dc_pin = dc_pin;
 
-	HAL_StatusTypeDef status = HAL_ERROR;
+//	HAL_StatusTypeDef status = HAL_ERROR;
 
 	// Read device ID information to make sure connection is made
-	uint8_t data_buffer[4] = { 0 };
-	status = ILI9341_Receive (device, _24_BITS, ILI9341_COMMAND_READ_ID, data_buffer);
-	for (uint8_t i = 0; i < 4; i++)	{
-		if (data_buffer[i] == 0)	status = HAL_ERROR;
-	}
+//	uint8_t data_buffer[2] = { 0 };
+//	if( ILI9341_Receive (device, _16_BITS, ILI9341_COMMAND_READ_POWER_MODE, data_buffer) != HAL_OK)	return HAL_ERROR;
+//	uint8_t single = 0x04;
+//	uint8_t tx_data[5] = { 0x04, 0, 0, 0, 0} ;
+//	uint8_t rx_data[5] = { 0 };
+//	HAL_GPIO_WritePin (device->cs_port, device->cs_pin, GPIO_PIN_SET);
+//	HAL_GPIO_WritePin (device->rs_port, device->rs_pin, GPIO_PIN_SET);
+//	HAL_GPIO_WritePin (device->dc_port, device->dc_pin, GPIO_PIN_RESET);
+//	HAL_GPIO_WritePin (device->cs_port, device->cs_pin, GPIO_PIN_RESET);
+//	HAL_GPIO_WritePin (device->dc_port, device->dc_pin, GPIO_PIN_RESET);
+//	HAL_SPI_Transmit (device->spi_handle, &single, 1, 100);
+//	HAL_SPI_Transmit (device->spi_handle, tx_data, 2, 100);
+//	HAL_GPIO_WritePin (device->dc_port, device->dc_pin, GPIO_PIN_SET);
+//	HAL_SPI_TransmitReceive (device->spi_handle, rx_data, rx_data, 1, 100);
+//	HAL_SPI_Receive (device->spi_handle, rx_data, 4, 100);
+//	HAL_GPIO_WritePin (device->dc_port, device->dc_pin, GPIO_PIN_RESET);
+//	HAL_GPIO_WritePin (device->cs_port, device->cs_pin, GPIO_PIN_SET);
+
+
+//	HAL_GPIO_WritePin (device->cs_port, device->cs_pin, GPIO_PIN_RESET);
+//	HAL_SPI_TransmitReceive (device->spi_handle, tx_data, rx_data, 5, 100);
+//	HAL_GPIO_WritePin (device->cs_port, device->cs_pin, GPIO_PIN_SET);
+//	for (uint8_t i = 1; i < 4; i++)	{
+//		if (data_buffer[i] == 0)	return HAL_ERROR;
+//	}
 
 	// Reset device commands and parameters
-	status = ILI9341_Reset (device);
-	HAL_Delay (5);
+//	if (ILI9341_Reset (device) != HAL_OK)	return HAL_ERROR;
+//	HAL_Delay (5);
+//
+//	if (ILI9341_Sleep_Out (device) != HAL_OK)	return HAL_ERROR;
+//	HAL_Delay (5);
+//
+//	 if (ILI9341_Display_On (device) != HAL_OK)	return HAL_ERROR;
+//
+//	// set block address
+//	ILI9341_Set_Column_Address (device, 0x00A0, 0x00A9);
+//	ILI9341_Set_Page_Address (device, 0x00A0, 0x00AF);
+//	ILI9341_Write_Pixel (device, COLOR_BLUE);
+//	ILI9341_Transmit (device, ILI9341_COMMAND_NOP);
+//
+//	uint8_t data_buffer_2[5] = {0};
+//	status = ILI9341_Receive (device, _32_BITS, ILI9341_COMMAND_READ_DISPLAY_STATUS, data_buffer_2);
+//
+//	uint8_t data_buffer_3[2] = {0};
+//	status = ILI9341_Receive (device, _16_BITS, ILI9341_COMMAND_READ_POWER_MODE, data_buffer_3);
 
-	status = ILI9341_Sleep_Out (device);
-	HAL_Delay (5);
-
-	status = ILI9341_Display_On (device);
-
-	// set block address
-	ILI9341_Set_Column_Address (device, 0x0000, 0x0009);
-	ILI9341_Set_Page_Address (device, 0x0000, 0x000F);
-	ILI9341_Write_Pixel (device, COLOR_BLACK);
-
-	// SET SCREEN COLOR
-
-	// SET TEXT COLOR
-
-	return status;
+	return HAL_OK;
 }
 
 /*

@@ -97,19 +97,219 @@ int main(void)
   MX_USART2_UART_Init();
   MX_SPI2_Init();
   /* USER CODE BEGIN 2 */
-  sprintf (message, "HELLO\r\n");
+  sprintf (message, "WHY\r\n");
   HAL_UART_Transmit (&huart2, (uint8_t *) message, 50, 100);
-  HAL_StatusTypeDef stat = ILI9341_Init(&ili9341, &hspi2, CS_GPIO_Port, CS_Pin, RS_GPIO_Port, RS_Pin, DC_GPIO_Port, DC_Pin);
-//  sprintf (message, "%d %d %d %d\r\n", data_buffer[0], data_buffer[1], data_buffer[2], data_buffer[3]);
-  sprintf (message, "%s\r\n", stat == HAL_OK ? "YIPEEEEE" : "NOOOOOOOOOOO");
-  HAL_UART_Transmit (&huart2, (uint8_t *) message, 50, 100);
+  ILI9341_Init(&ili9341, &hspi2, CS_GPIO_Port, CS_Pin, RS_GPIO_Port, RS_Pin, DC_GPIO_Port, DC_Pin);
+
+  HAL_GPIO_WritePin(CS_GPIO_Port, CS_Pin, GPIO_PIN_SET);
+
+  HAL_GPIO_WritePin(CS_GPIO_Port, CS_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(RS_GPIO_Port, RS_Pin, GPIO_PIN_RESET);
+  HAL_Delay(5);
+  HAL_GPIO_WritePin(RS_GPIO_Port, RS_Pin, GPIO_PIN_SET);
+
+  {
+	  uint8_t cmd = 0x01;
+	  HAL_GPIO_WritePin(DC_GPIO_Port, DC_Pin, GPIO_PIN_RESET);
+	  HAL_SPI_Transmit(&hspi2, &cmd, sizeof(cmd), HAL_MAX_DELAY);
+	  HAL_Delay (1000);
+  }
+  {
+	  uint8_t cmd = 0xCB;
+	  HAL_GPIO_WritePin(DC_GPIO_Port, DC_Pin, GPIO_PIN_RESET);
+	  HAL_SPI_Transmit(&hspi2, &cmd, sizeof(cmd), HAL_MAX_DELAY);
+	  uint8_t data[] = { 0x39, 0x2C, 0x34, 0x02 };
+	  HAL_GPIO_WritePin(DC_GPIO_Port, DC_Pin, GPIO_PIN_SET);
+	  HAL_SPI_Transmit(&hspi2, data, sizeof(data), HAL_MAX_DELAY);
+  }
+  {
+	  uint8_t cmd = 0xCF;
+	  HAL_GPIO_WritePin(DC_GPIO_Port, DC_Pin, GPIO_PIN_RESET);
+	  HAL_SPI_Transmit(&hspi2, &cmd, sizeof(cmd), HAL_MAX_DELAY);
+	  uint8_t data[] = { 0x00, 0xC1, 0x30 };
+	  HAL_GPIO_WritePin(DC_GPIO_Port, DC_Pin, GPIO_PIN_SET);
+	  HAL_SPI_Transmit(&hspi2, data, sizeof(data), HAL_MAX_DELAY);
+  }
+  {
+  	  uint8_t cmd = 0xEA;
+  	  HAL_GPIO_WritePin(DC_GPIO_Port, DC_Pin, GPIO_PIN_RESET);
+  	  HAL_SPI_Transmit(&hspi2, &cmd, sizeof(cmd), HAL_MAX_DELAY);
+  	  uint8_t data[] = { 0x00, 0x00 };
+  	  HAL_GPIO_WritePin(DC_GPIO_Port, DC_Pin, GPIO_PIN_SET);
+  	  HAL_SPI_Transmit(&hspi2, data, sizeof(data), HAL_MAX_DELAY);
+  }
+  {
+  	  uint8_t cmd = 0xED;
+  	  HAL_GPIO_WritePin(DC_GPIO_Port, DC_Pin, GPIO_PIN_RESET);
+  	  HAL_SPI_Transmit(&hspi2, &cmd, sizeof(cmd), HAL_MAX_DELAY);
+  	  uint8_t data[] = { 0x64, 0x03, 0x12, 0x81 };
+  	  HAL_GPIO_WritePin(DC_GPIO_Port, DC_Pin, GPIO_PIN_SET);
+  	  HAL_SPI_Transmit(&hspi2, data, sizeof(data), HAL_MAX_DELAY);
+  }
+  {
+  	  uint8_t cmd = 0xF7;
+  	  HAL_GPIO_WritePin(DC_GPIO_Port, DC_Pin, GPIO_PIN_RESET);
+  	  HAL_SPI_Transmit(&hspi2, &cmd, sizeof(cmd), HAL_MAX_DELAY);
+  	  uint8_t data[] = { 0x20 };
+  	  HAL_GPIO_WritePin(DC_GPIO_Port, DC_Pin, GPIO_PIN_SET);
+  	  HAL_SPI_Transmit(&hspi2, data, sizeof(data), HAL_MAX_DELAY);
+  }
+  {
+  	  uint8_t cmd = 0xC0;
+  	  HAL_GPIO_WritePin(DC_GPIO_Port, DC_Pin, GPIO_PIN_RESET);
+  	  HAL_SPI_Transmit(&hspi2, &cmd, sizeof(cmd), HAL_MAX_DELAY);
+  	  uint8_t data[] = { 0x23 };
+  	  HAL_GPIO_WritePin(DC_GPIO_Port, DC_Pin, GPIO_PIN_SET);
+  	  HAL_SPI_Transmit(&hspi2, data, sizeof(data), HAL_MAX_DELAY);
+  }
+  {
+  	  uint8_t cmd = 0xC1;
+  	  HAL_GPIO_WritePin(DC_GPIO_Port, DC_Pin, GPIO_PIN_RESET);
+  	  HAL_SPI_Transmit(&hspi2, &cmd, sizeof(cmd), HAL_MAX_DELAY);
+  	  uint8_t data[] = { 0x10 };
+  	  HAL_GPIO_WritePin(DC_GPIO_Port, DC_Pin, GPIO_PIN_SET);
+  	  HAL_SPI_Transmit(&hspi2, data, sizeof(data), HAL_MAX_DELAY);
+  }
+  {
+  	  uint8_t cmd = 0xC5;
+  	  HAL_GPIO_WritePin(DC_GPIO_Port, DC_Pin, GPIO_PIN_RESET);
+  	  HAL_SPI_Transmit(&hspi2, &cmd, sizeof(cmd), HAL_MAX_DELAY);
+  	  uint8_t data[] = { 0x3E, 0x28 };
+  	  HAL_GPIO_WritePin(DC_GPIO_Port, DC_Pin, GPIO_PIN_SET);
+  	  HAL_SPI_Transmit(&hspi2, data, sizeof(data), HAL_MAX_DELAY);
+  }
+  {
+  	  uint8_t cmd = 0xC7;
+  	  HAL_GPIO_WritePin(DC_GPIO_Port, DC_Pin, GPIO_PIN_RESET);
+  	  HAL_SPI_Transmit(&hspi2, &cmd, sizeof(cmd), HAL_MAX_DELAY);
+  	  uint8_t data[] = { 0x86 };
+  	  HAL_GPIO_WritePin(DC_GPIO_Port, DC_Pin, GPIO_PIN_SET);
+  	  HAL_SPI_Transmit(&hspi2, data, sizeof(data), HAL_MAX_DELAY);
+  }
+  {
+  	  uint8_t cmd = 0x36;
+  	  HAL_GPIO_WritePin(DC_GPIO_Port, DC_Pin, GPIO_PIN_RESET);
+  	  HAL_SPI_Transmit(&hspi2, &cmd, sizeof(cmd), HAL_MAX_DELAY);
+  	  uint8_t data[] = { 0x48 };
+  	  HAL_GPIO_WritePin(DC_GPIO_Port, DC_Pin, GPIO_PIN_SET);
+  	  HAL_SPI_Transmit(&hspi2, data, sizeof(data), HAL_MAX_DELAY);
+  }
+  {
+  	  uint8_t cmd = 0x3A;
+  	  HAL_GPIO_WritePin(DC_GPIO_Port, DC_Pin, GPIO_PIN_RESET);
+  	  HAL_SPI_Transmit(&hspi2, &cmd, sizeof(cmd), HAL_MAX_DELAY);
+  	  uint8_t data[] = { 0x55 };
+  	  HAL_GPIO_WritePin(DC_GPIO_Port, DC_Pin, GPIO_PIN_SET);
+  	  HAL_SPI_Transmit(&hspi2, data, sizeof(data), HAL_MAX_DELAY);
+  }
+  {
+  	  uint8_t cmd = 0xB1;
+  	  HAL_GPIO_WritePin(DC_GPIO_Port, DC_Pin, GPIO_PIN_RESET);
+  	  HAL_SPI_Transmit(&hspi2, &cmd, sizeof(cmd), HAL_MAX_DELAY);
+  	  uint8_t data[] = { 0x00, 0x18 };
+  	  HAL_GPIO_WritePin(DC_GPIO_Port, DC_Pin, GPIO_PIN_SET);
+  	  HAL_SPI_Transmit(&hspi2, data, sizeof(data), HAL_MAX_DELAY);
+  }
+  {
+  	  uint8_t cmd = 0xB6;
+  	  HAL_GPIO_WritePin(DC_GPIO_Port, DC_Pin, GPIO_PIN_RESET);
+  	  HAL_SPI_Transmit(&hspi2, &cmd, sizeof(cmd), HAL_MAX_DELAY);
+  	  uint8_t data[] = { 0x08, 0x82, 0x27 };
+  	  HAL_GPIO_WritePin(DC_GPIO_Port, DC_Pin, GPIO_PIN_SET);
+  	  HAL_SPI_Transmit(&hspi2, data, sizeof(data), HAL_MAX_DELAY);
+  }
+  {
+  	  uint8_t cmd = 0xF2;
+  	  HAL_GPIO_WritePin(DC_GPIO_Port, DC_Pin, GPIO_PIN_RESET);
+  	  HAL_SPI_Transmit(&hspi2, &cmd, sizeof(cmd), HAL_MAX_DELAY);
+  	  uint8_t data[] = { 0x00 };
+  	  HAL_GPIO_WritePin(DC_GPIO_Port, DC_Pin, GPIO_PIN_SET);
+  	  HAL_SPI_Transmit(&hspi2, data, sizeof(data), HAL_MAX_DELAY);
+  }
+  {
+  	  uint8_t cmd = 0x26;
+  	  HAL_GPIO_WritePin(DC_GPIO_Port, DC_Pin, GPIO_PIN_RESET);
+  	  HAL_SPI_Transmit(&hspi2, &cmd, sizeof(cmd), HAL_MAX_DELAY);
+  	  uint8_t data[] = { 0x01 };
+  	  HAL_GPIO_WritePin(DC_GPIO_Port, DC_Pin, GPIO_PIN_SET);
+  	  HAL_SPI_Transmit(&hspi2, data, sizeof(data), HAL_MAX_DELAY);
+  }
+  {
+  	  uint8_t cmd = 0xE0;
+  	  HAL_GPIO_WritePin(DC_GPIO_Port, DC_Pin, GPIO_PIN_RESET);
+  	  HAL_SPI_Transmit(&hspi2, &cmd, sizeof(cmd), HAL_MAX_DELAY);
+  	  uint8_t data[] = { 0x0F, 0x31, 0x2B, 0x0C, 0x0E, 0x08, 0x4E, 0xF1,
+						 0x37, 0x07, 0x10, 0x03, 0x0E, 0x09, 0x00 };
+  	  HAL_GPIO_WritePin(DC_GPIO_Port, DC_Pin, GPIO_PIN_SET);
+  	  HAL_SPI_Transmit(&hspi2, data, sizeof(data), HAL_MAX_DELAY);
+  }
+  {
+  	  uint8_t cmd = 0xE1;
+  	  HAL_GPIO_WritePin(DC_GPIO_Port, DC_Pin, GPIO_PIN_RESET);
+  	  HAL_SPI_Transmit(&hspi2, &cmd, sizeof(cmd), HAL_MAX_DELAY);
+  	  uint8_t data[] = { 0x00, 0x0E, 0x14, 0x03, 0x11, 0x07, 0x31, 0xC1,
+						 0x48, 0x08, 0x0F, 0x0C, 0x31, 0x36, 0x0F };
+  	  HAL_GPIO_WritePin(DC_GPIO_Port, DC_Pin, GPIO_PIN_SET);
+  	  HAL_SPI_Transmit(&hspi2, data, sizeof(data), HAL_MAX_DELAY);
+  }
+  {
+	  uint8_t cmd = 0x11;
+	  HAL_GPIO_WritePin(DC_GPIO_Port, DC_Pin, GPIO_PIN_RESET);
+	  HAL_SPI_Transmit(&hspi2, &cmd, sizeof(cmd), HAL_MAX_DELAY);
+	  HAL_Delay (120);
+  }
+  {
+	  uint8_t cmd = 0x29;
+	  HAL_GPIO_WritePin(DC_GPIO_Port, DC_Pin, GPIO_PIN_RESET);
+	  HAL_SPI_Transmit(&hspi2, &cmd, sizeof(cmd), HAL_MAX_DELAY);
+  }
+
+  HAL_GPIO_WritePin(CS_GPIO_Port, CS_Pin, GPIO_PIN_SET);
+
+
+
+
+
+
+  HAL_GPIO_WritePin(CS_GPIO_Port, CS_Pin, GPIO_PIN_RESET);
+
+  {
+	  uint8_t cmd = 0x2A;
+	  HAL_GPIO_WritePin(DC_GPIO_Port, DC_Pin, GPIO_PIN_RESET);
+	  HAL_SPI_Transmit(&hspi2, &cmd, sizeof(cmd), HAL_MAX_DELAY);
+	  uint8_t data[] = { 0x00, 0xA0, 0x00, 0xA9 };
+	  HAL_GPIO_WritePin(DC_GPIO_Port, DC_Pin, GPIO_PIN_SET);
+	  HAL_SPI_Transmit(&hspi2, data, sizeof(data), HAL_MAX_DELAY);
+  }
+  {
+	  uint8_t cmd = 0x2B;
+	  HAL_GPIO_WritePin(DC_GPIO_Port, DC_Pin, GPIO_PIN_RESET);
+	  HAL_SPI_Transmit(&hspi2, &cmd, sizeof(cmd), HAL_MAX_DELAY);
+	  uint8_t data[] = { 0x00, 0xA0, 0x00, 0xAF };
+	  HAL_GPIO_WritePin(DC_GPIO_Port, DC_Pin, GPIO_PIN_SET);
+	  HAL_SPI_Transmit(&hspi2, data, sizeof(data), HAL_MAX_DELAY);
+  }
+  {
+	  uint8_t cmd = 0x2C;
+	  HAL_GPIO_WritePin(DC_GPIO_Port, DC_Pin, GPIO_PIN_RESET);
+	  HAL_SPI_Transmit(&hspi2, &cmd, sizeof(cmd), HAL_MAX_DELAY);
+	  uint8_t data[] = { 0xF8, 0x00,0xF8, 0x00, 0xF8, 0x00, 0xF8, 0x00,
+			  	  	  	 0xF8, 0x00,0xF8, 0x00, 0xF8, 0x00, 0xF8, 0x00};
+	  HAL_GPIO_WritePin(DC_GPIO_Port, DC_Pin, GPIO_PIN_SET);
+	  HAL_SPI_Transmit(&hspi2, data, sizeof(data), HAL_MAX_DELAY);
+  }
+
+  HAL_GPIO_WritePin(CS_GPIO_Port, CS_Pin, GPIO_PIN_SET);
+
+
+//  sprintf (message, "%s\r\n", stat == HAL_OK ? "YIPEEEEE" : "NOOOOOOOOOOO");
+//  HAL_UART_Transmit (&huart2, (uint8_t *) message, 50, 100);
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-//	  HAL_UART_Transmit (&huart2, (uint8_t *) message, 50, 100);
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -129,12 +329,11 @@ void SystemClock_Config(void)
   /** Initializes the RCC Oscillators according to the specified parameters
   * in the RCC_OscInitTypeDef structure.
   */
-  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSE;
-  RCC_OscInitStruct.HSEState = RCC_HSE_ON;
-  RCC_OscInitStruct.HSEPredivValue = RCC_HSE_PREDIV_DIV1;
+  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSI;
   RCC_OscInitStruct.HSIState = RCC_HSI_ON;
+  RCC_OscInitStruct.HSICalibrationValue = RCC_HSICALIBRATION_DEFAULT;
   RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
-  RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSE;
+  RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSI;
   RCC_OscInitStruct.PLL.PLLMUL = RCC_PLL_MUL6;
   if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
   {
@@ -179,7 +378,7 @@ static void MX_SPI2_Init(void)
   hspi2.Init.CLKPolarity = SPI_POLARITY_LOW;
   hspi2.Init.CLKPhase = SPI_PHASE_1EDGE;
   hspi2.Init.NSS = SPI_NSS_SOFT;
-  hspi2.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_2;
+  hspi2.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_8;
   hspi2.Init.FirstBit = SPI_FIRSTBIT_MSB;
   hspi2.Init.TIMode = SPI_TIMODE_DISABLE;
   hspi2.Init.CRCCalculation = SPI_CRCCALCULATION_DISABLE;
@@ -243,33 +442,18 @@ static void MX_GPIO_Init(void)
 /* USER CODE END MX_GPIO_Init_1 */
 
   /* GPIO Ports Clock Enable */
-  __HAL_RCC_GPIOF_CLK_ENABLE();
   __HAL_RCC_GPIOA_CLK_ENABLE();
   __HAL_RCC_GPIOB_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOA, CS_Pin|RS_Pin|DC_Pin, GPIO_PIN_RESET);
 
-  /*Configure GPIO pin : CS_Pin */
-  GPIO_InitStruct.Pin = CS_Pin;
+  /*Configure GPIO pins : CS_Pin RS_Pin DC_Pin */
+  GPIO_InitStruct.Pin = CS_Pin|RS_Pin|DC_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-  GPIO_InitStruct.Pull = GPIO_PULLUP;
-  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
-  HAL_GPIO_Init(CS_GPIO_Port, &GPIO_InitStruct);
-
-  /*Configure GPIO pin : RS_Pin */
-  GPIO_InitStruct.Pin = RS_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-  GPIO_InitStruct.Pull = GPIO_PULLUP;
-  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_MEDIUM;
-  HAL_GPIO_Init(RS_GPIO_Port, &GPIO_InitStruct);
-
-  /*Configure GPIO pin : DC_Pin */
-  GPIO_InitStruct.Pin = DC_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-  GPIO_InitStruct.Pull = GPIO_PULLDOWN;
-  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
-  HAL_GPIO_Init(DC_GPIO_Port, &GPIO_InitStruct);
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
 /* USER CODE BEGIN MX_GPIO_Init_2 */
 /* USER CODE END MX_GPIO_Init_2 */

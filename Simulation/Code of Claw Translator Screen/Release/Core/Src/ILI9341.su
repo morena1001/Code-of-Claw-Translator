@@ -1,0 +1,11 @@
+../Core/Src/ILI9341.c:15:19:ILI9341_Init	0	static
+../Core/Src/ILI9341.c:126:19:ILI9341_Transmit	24	static
+../Core/Src/ILI9341.c:81:19:ILI9341_Reset	0	static
+../Core/Src/ILI9341.c:85:19:ILI9341_Sleep_Out	0	static
+../Core/Src/ILI9341.c:89:19:ILI9341_Display_On	0	static
+../Core/Src/ILI9341.c:134:19:ILI9341_Transmit_Data	24	static
+../Core/Src/ILI9341.c:145:19:ILI9341_Transmit_Irregular_Data	24	static
+../Core/Src/ILI9341.c:93:19:ILI9341_Set_Column_Address	16	static
+../Core/Src/ILI9341.c:103:19:ILI9341_Set_Page_Address	16	static
+../Core/Src/ILI9341.c:113:19:ILI9341_Write_Pixel	16	static
+../Core/Src/ILI9341.c:156:19:ILI9341_Receive	24	static

@@ -52,6 +52,12 @@ default.size.stdout \
 OBJDUMP_LIST += \
 Code\ of\ Claw\ Translator\ Screen.list \
 
+OBJCOPY_HEX += \
+Code\ of\ Claw\ Translator\ Screen.hex \
+
+OBJCOPY_BIN += \
+Code\ of\ Claw\ Translator\ Screen.bin \
+
 
 # All Target
 all: main-build
@@ -75,12 +81,22 @@ Code\ of\ Claw\ Translator\ Screen.list: $(EXECUTABLES) makefile objects.list $(
 	@echo 'Finished building: $@'
 	@echo ' '
 
+Code\ of\ Claw\ Translator\ Screen.hex: $(EXECUTABLES) makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-objcopy  -O ihex $(EXECUTABLES) "Code of Claw Translator Screen.hex"
+	@echo 'Finished building: $@'
+	@echo ' '
+
+Code\ of\ Claw\ Translator\ Screen.bin: $(EXECUTABLES) makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-objcopy  -O binary $(EXECUTABLES) "Code of Claw Translator Screen.bin"
+	@echo 'Finished building: $@'
+	@echo ' '
+
 # Other Targets
 clean:
-	-$(RM) Code\ of\ Claw\ Translator\ Screen.elf Code\ of\ Claw\ Translator\ Screen.list Code\ of\ Claw\ Translator\ Screen.map Code\\ of\\ Claw\\ Translator\\ Screen.elf default.size.stdout
+	-$(RM) Code\ of\ Claw\ Translator\ Screen.bin Code\ of\ Claw\ Translator\ Screen.elf Code\ of\ Claw\ Translator\ Screen.hex Code\ of\ Claw\ Translator\ Screen.list Code\ of\ Claw\ Translator\ Screen.map Code\\ of\\ Claw\\ Translator\\ Screen.elf default.size.stdout
 	-@echo ' '
 
-secondary-outputs: $(SIZE_OUTPUT) $(OBJDUMP_LIST)
+secondary-outputs: $(SIZE_OUTPUT) $(OBJDUMP_LIST) $(OBJCOPY_HEX) $(OBJCOPY_BIN)
 
 fail-specified-linker-script-missing:
 	@echo 'Error: Cannot find the specified linker script. Check the linker settings in the build configuration.'
