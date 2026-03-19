@@ -101,205 +101,32 @@ int main(void)
   HAL_UART_Transmit (&huart2, (uint8_t *) message, 50, 100);
   ILI9341_Init(&ili9341, &hspi2, CS_GPIO_Port, CS_Pin, RS_GPIO_Port, RS_Pin, DC_GPIO_Port, DC_Pin);
 
-  HAL_GPIO_WritePin(CS_GPIO_Port, CS_Pin, GPIO_PIN_SET);
-
-  HAL_GPIO_WritePin(CS_GPIO_Port, CS_Pin, GPIO_PIN_RESET);
-  HAL_GPIO_WritePin(RS_GPIO_Port, RS_Pin, GPIO_PIN_RESET);
-  HAL_Delay(5);
-  HAL_GPIO_WritePin(RS_GPIO_Port, RS_Pin, GPIO_PIN_SET);
-
-  {
-	  uint8_t cmd = 0x01;
-	  HAL_GPIO_WritePin(DC_GPIO_Port, DC_Pin, GPIO_PIN_RESET);
-	  HAL_SPI_Transmit(&hspi2, &cmd, sizeof(cmd), HAL_MAX_DELAY);
-	  HAL_Delay (1000);
-  }
-  {
-	  uint8_t cmd = 0xCB;
-	  HAL_GPIO_WritePin(DC_GPIO_Port, DC_Pin, GPIO_PIN_RESET);
-	  HAL_SPI_Transmit(&hspi2, &cmd, sizeof(cmd), HAL_MAX_DELAY);
-	  uint8_t data[] = { 0x39, 0x2C, 0x34, 0x02 };
-	  HAL_GPIO_WritePin(DC_GPIO_Port, DC_Pin, GPIO_PIN_SET);
-	  HAL_SPI_Transmit(&hspi2, data, sizeof(data), HAL_MAX_DELAY);
-  }
-  {
-	  uint8_t cmd = 0xCF;
-	  HAL_GPIO_WritePin(DC_GPIO_Port, DC_Pin, GPIO_PIN_RESET);
-	  HAL_SPI_Transmit(&hspi2, &cmd, sizeof(cmd), HAL_MAX_DELAY);
-	  uint8_t data[] = { 0x00, 0xC1, 0x30 };
-	  HAL_GPIO_WritePin(DC_GPIO_Port, DC_Pin, GPIO_PIN_SET);
-	  HAL_SPI_Transmit(&hspi2, data, sizeof(data), HAL_MAX_DELAY);
-  }
-  {
-  	  uint8_t cmd = 0xEA;
-  	  HAL_GPIO_WritePin(DC_GPIO_Port, DC_Pin, GPIO_PIN_RESET);
-  	  HAL_SPI_Transmit(&hspi2, &cmd, sizeof(cmd), HAL_MAX_DELAY);
-  	  uint8_t data[] = { 0x00, 0x00 };
-  	  HAL_GPIO_WritePin(DC_GPIO_Port, DC_Pin, GPIO_PIN_SET);
-  	  HAL_SPI_Transmit(&hspi2, data, sizeof(data), HAL_MAX_DELAY);
-  }
-  {
-  	  uint8_t cmd = 0xED;
-  	  HAL_GPIO_WritePin(DC_GPIO_Port, DC_Pin, GPIO_PIN_RESET);
-  	  HAL_SPI_Transmit(&hspi2, &cmd, sizeof(cmd), HAL_MAX_DELAY);
-  	  uint8_t data[] = { 0x64, 0x03, 0x12, 0x81 };
-  	  HAL_GPIO_WritePin(DC_GPIO_Port, DC_Pin, GPIO_PIN_SET);
-  	  HAL_SPI_Transmit(&hspi2, data, sizeof(data), HAL_MAX_DELAY);
-  }
-  {
-  	  uint8_t cmd = 0xF7;
-  	  HAL_GPIO_WritePin(DC_GPIO_Port, DC_Pin, GPIO_PIN_RESET);
-  	  HAL_SPI_Transmit(&hspi2, &cmd, sizeof(cmd), HAL_MAX_DELAY);
-  	  uint8_t data[] = { 0x20 };
-  	  HAL_GPIO_WritePin(DC_GPIO_Port, DC_Pin, GPIO_PIN_SET);
-  	  HAL_SPI_Transmit(&hspi2, data, sizeof(data), HAL_MAX_DELAY);
-  }
-  {
-  	  uint8_t cmd = 0xC0;
-  	  HAL_GPIO_WritePin(DC_GPIO_Port, DC_Pin, GPIO_PIN_RESET);
-  	  HAL_SPI_Transmit(&hspi2, &cmd, sizeof(cmd), HAL_MAX_DELAY);
-  	  uint8_t data[] = { 0x23 };
-  	  HAL_GPIO_WritePin(DC_GPIO_Port, DC_Pin, GPIO_PIN_SET);
-  	  HAL_SPI_Transmit(&hspi2, data, sizeof(data), HAL_MAX_DELAY);
-  }
-  {
-  	  uint8_t cmd = 0xC1;
-  	  HAL_GPIO_WritePin(DC_GPIO_Port, DC_Pin, GPIO_PIN_RESET);
-  	  HAL_SPI_Transmit(&hspi2, &cmd, sizeof(cmd), HAL_MAX_DELAY);
-  	  uint8_t data[] = { 0x10 };
-  	  HAL_GPIO_WritePin(DC_GPIO_Port, DC_Pin, GPIO_PIN_SET);
-  	  HAL_SPI_Transmit(&hspi2, data, sizeof(data), HAL_MAX_DELAY);
-  }
-  {
-  	  uint8_t cmd = 0xC5;
-  	  HAL_GPIO_WritePin(DC_GPIO_Port, DC_Pin, GPIO_PIN_RESET);
-  	  HAL_SPI_Transmit(&hspi2, &cmd, sizeof(cmd), HAL_MAX_DELAY);
-  	  uint8_t data[] = { 0x3E, 0x28 };
-  	  HAL_GPIO_WritePin(DC_GPIO_Port, DC_Pin, GPIO_PIN_SET);
-  	  HAL_SPI_Transmit(&hspi2, data, sizeof(data), HAL_MAX_DELAY);
-  }
-  {
-  	  uint8_t cmd = 0xC7;
-  	  HAL_GPIO_WritePin(DC_GPIO_Port, DC_Pin, GPIO_PIN_RESET);
-  	  HAL_SPI_Transmit(&hspi2, &cmd, sizeof(cmd), HAL_MAX_DELAY);
-  	  uint8_t data[] = { 0x86 };
-  	  HAL_GPIO_WritePin(DC_GPIO_Port, DC_Pin, GPIO_PIN_SET);
-  	  HAL_SPI_Transmit(&hspi2, data, sizeof(data), HAL_MAX_DELAY);
-  }
-  {
-  	  uint8_t cmd = 0x36;
-  	  HAL_GPIO_WritePin(DC_GPIO_Port, DC_Pin, GPIO_PIN_RESET);
-  	  HAL_SPI_Transmit(&hspi2, &cmd, sizeof(cmd), HAL_MAX_DELAY);
-  	  uint8_t data[] = { 0x48 };
-  	  HAL_GPIO_WritePin(DC_GPIO_Port, DC_Pin, GPIO_PIN_SET);
-  	  HAL_SPI_Transmit(&hspi2, data, sizeof(data), HAL_MAX_DELAY);
-  }
-  {
-  	  uint8_t cmd = 0x3A;
-  	  HAL_GPIO_WritePin(DC_GPIO_Port, DC_Pin, GPIO_PIN_RESET);
-  	  HAL_SPI_Transmit(&hspi2, &cmd, sizeof(cmd), HAL_MAX_DELAY);
-  	  uint8_t data[] = { 0x55 };
-  	  HAL_GPIO_WritePin(DC_GPIO_Port, DC_Pin, GPIO_PIN_SET);
-  	  HAL_SPI_Transmit(&hspi2, data, sizeof(data), HAL_MAX_DELAY);
-  }
-  {
-  	  uint8_t cmd = 0xB1;
-  	  HAL_GPIO_WritePin(DC_GPIO_Port, DC_Pin, GPIO_PIN_RESET);
-  	  HAL_SPI_Transmit(&hspi2, &cmd, sizeof(cmd), HAL_MAX_DELAY);
-  	  uint8_t data[] = { 0x00, 0x18 };
-  	  HAL_GPIO_WritePin(DC_GPIO_Port, DC_Pin, GPIO_PIN_SET);
-  	  HAL_SPI_Transmit(&hspi2, data, sizeof(data), HAL_MAX_DELAY);
-  }
-  {
-  	  uint8_t cmd = 0xB6;
-  	  HAL_GPIO_WritePin(DC_GPIO_Port, DC_Pin, GPIO_PIN_RESET);
-  	  HAL_SPI_Transmit(&hspi2, &cmd, sizeof(cmd), HAL_MAX_DELAY);
-  	  uint8_t data[] = { 0x08, 0x82, 0x27 };
-  	  HAL_GPIO_WritePin(DC_GPIO_Port, DC_Pin, GPIO_PIN_SET);
-  	  HAL_SPI_Transmit(&hspi2, data, sizeof(data), HAL_MAX_DELAY);
-  }
-  {
-  	  uint8_t cmd = 0xF2;
-  	  HAL_GPIO_WritePin(DC_GPIO_Port, DC_Pin, GPIO_PIN_RESET);
-  	  HAL_SPI_Transmit(&hspi2, &cmd, sizeof(cmd), HAL_MAX_DELAY);
-  	  uint8_t data[] = { 0x00 };
-  	  HAL_GPIO_WritePin(DC_GPIO_Port, DC_Pin, GPIO_PIN_SET);
-  	  HAL_SPI_Transmit(&hspi2, data, sizeof(data), HAL_MAX_DELAY);
-  }
-  {
-  	  uint8_t cmd = 0x26;
-  	  HAL_GPIO_WritePin(DC_GPIO_Port, DC_Pin, GPIO_PIN_RESET);
-  	  HAL_SPI_Transmit(&hspi2, &cmd, sizeof(cmd), HAL_MAX_DELAY);
-  	  uint8_t data[] = { 0x01 };
-  	  HAL_GPIO_WritePin(DC_GPIO_Port, DC_Pin, GPIO_PIN_SET);
-  	  HAL_SPI_Transmit(&hspi2, data, sizeof(data), HAL_MAX_DELAY);
-  }
-  {
-  	  uint8_t cmd = 0xE0;
-  	  HAL_GPIO_WritePin(DC_GPIO_Port, DC_Pin, GPIO_PIN_RESET);
-  	  HAL_SPI_Transmit(&hspi2, &cmd, sizeof(cmd), HAL_MAX_DELAY);
-  	  uint8_t data[] = { 0x0F, 0x31, 0x2B, 0x0C, 0x0E, 0x08, 0x4E, 0xF1,
-						 0x37, 0x07, 0x10, 0x03, 0x0E, 0x09, 0x00 };
-  	  HAL_GPIO_WritePin(DC_GPIO_Port, DC_Pin, GPIO_PIN_SET);
-  	  HAL_SPI_Transmit(&hspi2, data, sizeof(data), HAL_MAX_DELAY);
-  }
-  {
-  	  uint8_t cmd = 0xE1;
-  	  HAL_GPIO_WritePin(DC_GPIO_Port, DC_Pin, GPIO_PIN_RESET);
-  	  HAL_SPI_Transmit(&hspi2, &cmd, sizeof(cmd), HAL_MAX_DELAY);
-  	  uint8_t data[] = { 0x00, 0x0E, 0x14, 0x03, 0x11, 0x07, 0x31, 0xC1,
-						 0x48, 0x08, 0x0F, 0x0C, 0x31, 0x36, 0x0F };
-  	  HAL_GPIO_WritePin(DC_GPIO_Port, DC_Pin, GPIO_PIN_SET);
-  	  HAL_SPI_Transmit(&hspi2, data, sizeof(data), HAL_MAX_DELAY);
-  }
-  {
-	  uint8_t cmd = 0x11;
-	  HAL_GPIO_WritePin(DC_GPIO_Port, DC_Pin, GPIO_PIN_RESET);
-	  HAL_SPI_Transmit(&hspi2, &cmd, sizeof(cmd), HAL_MAX_DELAY);
-	  HAL_Delay (120);
-  }
-  {
-	  uint8_t cmd = 0x29;
-	  HAL_GPIO_WritePin(DC_GPIO_Port, DC_Pin, GPIO_PIN_RESET);
-	  HAL_SPI_Transmit(&hspi2, &cmd, sizeof(cmd), HAL_MAX_DELAY);
-  }
-
-  HAL_GPIO_WritePin(CS_GPIO_Port, CS_Pin, GPIO_PIN_SET);
 
 
+  ILI9341_Set_Window_Location (&ili9341, 0x00A0, 0x00A9, 0x00A0, 0x00AF);
+  uint32_t values[] = { 0x0000FC, 0x00FC00, 0x00FC00, 0x00FC00,
+		  	  	  	  0x00FC00, 0x00FC00, 0x00FC00, 0x0000FC };
+  ILI9341_Write_Pixels(&ili9341, values, sizeof (values) / sizeof (uint32_t));
 
 
+//  HAL_GPIO_WritePin(CS_GPIO_Port, CS_Pin, GPIO_PIN_RESET);
+//  {
+//	  uint8_t cmd = 0x2C;
+//	  HAL_GPIO_WritePin(DC_GPIO_Port, DC_Pin, GPIO_PIN_RESET);
+//	  HAL_SPI_Transmit(&hspi2, &cmd, sizeof(cmd), HAL_MAX_DELAY);
+//	  uint8_t data[] = { 0x00, 0xFC, 0x00,
+//			  	  	  	 0x00, 0xFC, 0x00,
+//						 0x00, 0xFC, 0x00,
+//						 0x00, 0xFC, 0x00,
+//						 0x00, 0xFC, 0x00,
+//						 0x00, 0xFC, 0x00,
+//						 0x00, 0xFC, 0x00,
+//						 0x00, 0xFC, 0x00};
+//	  HAL_GPIO_WritePin(DC_GPIO_Port, DC_Pin, GPIO_PIN_SET);
+//	  HAL_SPI_Transmit(&hspi2, data, sizeof(data), HAL_MAX_DELAY);
+//  }
 
-
-  HAL_GPIO_WritePin(CS_GPIO_Port, CS_Pin, GPIO_PIN_RESET);
-
-  {
-	  uint8_t cmd = 0x2A;
-	  HAL_GPIO_WritePin(DC_GPIO_Port, DC_Pin, GPIO_PIN_RESET);
-	  HAL_SPI_Transmit(&hspi2, &cmd, sizeof(cmd), HAL_MAX_DELAY);
-	  uint8_t data[] = { 0x00, 0xA0, 0x00, 0xA9 };
-	  HAL_GPIO_WritePin(DC_GPIO_Port, DC_Pin, GPIO_PIN_SET);
-	  HAL_SPI_Transmit(&hspi2, data, sizeof(data), HAL_MAX_DELAY);
-  }
-  {
-	  uint8_t cmd = 0x2B;
-	  HAL_GPIO_WritePin(DC_GPIO_Port, DC_Pin, GPIO_PIN_RESET);
-	  HAL_SPI_Transmit(&hspi2, &cmd, sizeof(cmd), HAL_MAX_DELAY);
-	  uint8_t data[] = { 0x00, 0xA0, 0x00, 0xAF };
-	  HAL_GPIO_WritePin(DC_GPIO_Port, DC_Pin, GPIO_PIN_SET);
-	  HAL_SPI_Transmit(&hspi2, data, sizeof(data), HAL_MAX_DELAY);
-  }
-  {
-	  uint8_t cmd = 0x2C;
-	  HAL_GPIO_WritePin(DC_GPIO_Port, DC_Pin, GPIO_PIN_RESET);
-	  HAL_SPI_Transmit(&hspi2, &cmd, sizeof(cmd), HAL_MAX_DELAY);
-	  uint8_t data[] = { 0xF8, 0x00,0xF8, 0x00, 0xF8, 0x00, 0xF8, 0x00,
-			  	  	  	 0xF8, 0x00,0xF8, 0x00, 0xF8, 0x00, 0xF8, 0x00};
-	  HAL_GPIO_WritePin(DC_GPIO_Port, DC_Pin, GPIO_PIN_SET);
-	  HAL_SPI_Transmit(&hspi2, data, sizeof(data), HAL_MAX_DELAY);
-  }
-
-  HAL_GPIO_WritePin(CS_GPIO_Port, CS_Pin, GPIO_PIN_SET);
+//  HAL_GPIO_WritePin(CS_GPIO_Port, CS_Pin, GPIO_PIN_SET);
 
 
 //  sprintf (message, "%s\r\n", stat == HAL_OK ? "YIPEEEEE" : "NOOOOOOOOOOO");

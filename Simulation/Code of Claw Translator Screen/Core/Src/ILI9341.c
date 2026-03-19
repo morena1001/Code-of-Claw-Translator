@@ -23,54 +23,44 @@ HAL_StatusTypeDef ILI9341_Init (ILI9341_t* device, SPI_HandleTypeDef* spi_handle
 
 //	HAL_StatusTypeDef status = HAL_ERROR;
 
-	// Read device ID information to make sure connection is made
-//	uint8_t data_buffer[2] = { 0 };
-//	if( ILI9341_Receive (device, _16_BITS, ILI9341_COMMAND_READ_POWER_MODE, data_buffer) != HAL_OK)	return HAL_ERROR;
-//	uint8_t single = 0x04;
-//	uint8_t tx_data[5] = { 0x04, 0, 0, 0, 0} ;
-//	uint8_t rx_data[5] = { 0 };
-//	HAL_GPIO_WritePin (device->cs_port, device->cs_pin, GPIO_PIN_SET);
-//	HAL_GPIO_WritePin (device->rs_port, device->rs_pin, GPIO_PIN_SET);
-//	HAL_GPIO_WritePin (device->dc_port, device->dc_pin, GPIO_PIN_RESET);
-//	HAL_GPIO_WritePin (device->cs_port, device->cs_pin, GPIO_PIN_RESET);
-//	HAL_GPIO_WritePin (device->dc_port, device->dc_pin, GPIO_PIN_RESET);
-//	HAL_SPI_Transmit (device->spi_handle, &single, 1, 100);
-//	HAL_SPI_Transmit (device->spi_handle, tx_data, 2, 100);
-//	HAL_GPIO_WritePin (device->dc_port, device->dc_pin, GPIO_PIN_SET);
-//	HAL_SPI_TransmitReceive (device->spi_handle, rx_data, rx_data, 1, 100);
-//	HAL_SPI_Receive (device->spi_handle, rx_data, 4, 100);
-//	HAL_GPIO_WritePin (device->dc_port, device->dc_pin, GPIO_PIN_RESET);
-//	HAL_GPIO_WritePin (device->cs_port, device->cs_pin, GPIO_PIN_SET);
+	HAL_GPIO_WritePin (device->cs_port, device->cs_pin, GPIO_PIN_SET);
 
+	HAL_GPIO_WritePin (device->cs_port, device->cs_pin, GPIO_PIN_RESET);
+	HAL_GPIO_WritePin (device->rs_port, device->rs_pin, GPIO_PIN_RESET);
+    HAL_Delay(5);
+    HAL_GPIO_WritePin (device->rs_port, device->rs_pin, GPIO_PIN_SET);
 
-//	HAL_GPIO_WritePin (device->cs_port, device->cs_pin, GPIO_PIN_RESET);
-//	HAL_SPI_TransmitReceive (device->spi_handle, tx_data, rx_data, 5, 100);
-//	HAL_GPIO_WritePin (device->cs_port, device->cs_pin, GPIO_PIN_SET);
-//	for (uint8_t i = 1; i < 4; i++)	{
-//		if (data_buffer[i] == 0)	return HAL_ERROR;
-//	}
+    ILI9341_Transmit_Cmd (device, ILI9341_COMMAND_SWRESET, true);
+    HAL_Delay (1000);
 
-	// Reset device commands and parameters
-//	if (ILI9341_Reset (device) != HAL_OK)	return HAL_ERROR;
-//	HAL_Delay (5);
-//
-//	if (ILI9341_Sleep_Out (device) != HAL_OK)	return HAL_ERROR;
-//	HAL_Delay (5);
-//
-//	 if (ILI9341_Display_On (device) != HAL_OK)	return HAL_ERROR;
-//
-//	// set block address
-//	ILI9341_Set_Column_Address (device, 0x00A0, 0x00A9);
-//	ILI9341_Set_Page_Address (device, 0x00A0, 0x00AF);
-//	ILI9341_Write_Pixel (device, COLOR_BLUE);
-//	ILI9341_Transmit (device, ILI9341_COMMAND_NOP);
-//
-//	uint8_t data_buffer_2[5] = {0};
-//	status = ILI9341_Receive (device, _32_BITS, ILI9341_COMMAND_READ_DISPLAY_STATUS, data_buffer_2);
-//
-//	uint8_t data_buffer_3[2] = {0};
-//	status = ILI9341_Receive (device, _16_BITS, ILI9341_COMMAND_READ_POWER_MODE, data_buffer_3);
+    ILI9341_Transmit_Cmd (device, ILI9341_COMMAND_MADCTL, true); {
+    	uint8_t data[] = { 0x40 };
+    	ILI9341_Transmit_Data(device, data, sizeof (data), true);
+    }
 
+    ILI9341_Transmit_Cmd (device, ILI9341_COMMAND_ENABLE_3G, true); {
+    	uint8_t data[] = { 0x03 };
+    	ILI9341_Transmit_Data(device, data, sizeof (data), true);
+    }
+
+    ILI9341_Transmit_Cmd (device, ILI9341_COMMAND_PGAMCTRL, true); {
+    	uint8_t data[] = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+  				 	 	   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
+    	ILI9341_Transmit_Data(device, data, sizeof (data), true);
+    }
+
+    ILI9341_Transmit_Cmd (device, ILI9341_COMMAND_NGAMCTRL, true); {
+    	uint8_t data[] = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+  				 	 	   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
+    	ILI9341_Transmit_Data(device, data, sizeof (data), true);
+    }
+
+    ILI9341_Transmit_Cmd (device, ILI9341_COMMAND_SLPOUT, true);
+    ILI9341_Transmit_Cmd (device, ILI9341_COMMAND_DISPON, true);
+
+    HAL_GPIO_WritePin (device->cs_port, device->cs_pin, GPIO_PIN_SET);
+
+//	return status;
 	return HAL_OK;
 }
 
@@ -79,101 +69,111 @@ HAL_StatusTypeDef ILI9341_Init (ILI9341_t* device, SPI_HandleTypeDef* spi_handle
  */
 
 HAL_StatusTypeDef ILI9341_Reset (ILI9341_t* device) {
-	return ILI9341_Transmit (device, ILI9341_COMMAND_RESET);
+	HAL_GPIO_WritePin (device->cs_port, device->cs_pin, GPIO_PIN_RESET);
+	HAL_GPIO_WritePin (device->dc_port, device->dc_pin, GPIO_PIN_RESET);
+	uint8_t cmd = ILI9341_COMMAND_SWRESET;
+	HAL_StatusTypeDef status = HAL_SPI_Transmit (device->spi_handle, &cmd, sizeof (cmd), 100);
+	HAL_GPIO_WritePin (device->cs_port, device->cs_pin, GPIO_PIN_SET);
+	HAL_Delay (1000);
+	return status;
 }
 
-HAL_StatusTypeDef ILI9341_Sleep_Out (ILI9341_t* device) {
-	return ILI9341_Transmit (device, ILI9341_COMMAND_SLEEP_OUT);
+HAL_StatusTypeDef ILI9341_Set_Window_Location (ILI9341_t* device, uint16_t x_left, uint16_t x_right, uint16_t y_up, uint16_t y_down) {
+	HAL_GPIO_WritePin (device->cs_port, device->cs_pin, GPIO_PIN_RESET);
+
+	{
+		uint8_t cmd = ILI9341_COMMAND_CASET;
+		HAL_GPIO_WritePin (device->dc_port, device->dc_pin, GPIO_PIN_RESET);
+		HAL_SPI_Transmit (device->spi_handle, &cmd, sizeof (cmd), 100);
+		uint8_t data[] = { (x_left >> 8) & 0xFF, x_left & 0xFF, (x_right >> 8) & 0xFF, x_right & 0xFF };
+		HAL_GPIO_WritePin (device->dc_port, device->dc_pin, GPIO_PIN_SET);
+		HAL_SPI_Transmit (device->spi_handle, data, sizeof (data), 100);
+	}
+	{
+		uint8_t cmd = ILI9341_COMMAND_PASET;
+		HAL_GPIO_WritePin (device->dc_port, device->dc_pin, GPIO_PIN_RESET);
+		HAL_SPI_Transmit (device->spi_handle, &cmd, sizeof (cmd), 100);
+		uint8_t data[] = { (y_up >> 8) & 0xFF, y_up & 0xFF, (y_down >> 8) & 0xFF, y_down & 0xFF };
+		HAL_GPIO_WritePin (device->dc_port, device->dc_pin, GPIO_PIN_SET);
+		HAL_SPI_Transmit (device->spi_handle, data, sizeof (data), 100);
+	}
+
+	device->x_pos = x_left;
+	device->y_pos = y_up;
+	device->win_s_x = x_left;
+	device->win_e_x = x_right;
+	device->win_s_y = y_up;
+	device->win_e_y = y_down;
+
+	HAL_GPIO_WritePin (device->cs_port, device->cs_pin, GPIO_PIN_SET);
+	return HAL_OK;
 }
 
-HAL_StatusTypeDef ILI9341_Display_On (ILI9341_t* device) {
-	return ILI9341_Transmit (device, ILI9341_COMMAND_DISPLAY_ON);
-}
-
-HAL_StatusTypeDef ILI9341_Set_Column_Address (ILI9341_t* device, uint16_t start_column_address, uint16_t end_column_address) {
-	uint8_t* parameters = malloc (sizeof (uint8_t) * 4);
-	parameters[0] = (uint8_t) (start_column_address >> 8);
-	parameters[1] = (uint8_t) (start_column_address & 0x00FF);
-	parameters[2] = (uint8_t) (end_column_address >> 8);
-	parameters[3] = (uint8_t) (end_column_address & 0x00FF);
-
-	return ILI9341_Transmit_Irregular_Data (device, ILI9341_COMMAND_COLUMN_ADDRESS_SET, 4, parameters);
-}
-
-HAL_StatusTypeDef ILI9341_Set_Page_Address (ILI9341_t* device, uint16_t start_page_address, uint16_t end_page_address) {
-	uint8_t* parameters = malloc (sizeof (uint8_t) * 4);
-	parameters[0] = (uint8_t) (start_page_address >> 8);
-	parameters[1] = (uint8_t) (start_page_address & 0xFF);
-	parameters[2] = (uint8_t) (end_page_address >> 8);
-	parameters[3] = (uint8_t) (end_page_address & 0xFF);
-
-	return ILI9341_Transmit_Irregular_Data (device, ILI9341_COMMAND_PAGE_ADDRESS_SET, 4, parameters);
-}
+//HAL_StatusTypeDef ILI9341_Set_Rotation LOOK FOR THE COMMAND FOR THIS
 
 HAL_StatusTypeDef ILI9341_Write_Pixel (ILI9341_t* device, uint32_t color_value) {
-	uint8_t* parameters = malloc (sizeof (uint8_t) * 3);
-	parameters[1] = (uint8_t) ((color_value >> 16) & 0xFF);
-	parameters[2] = (uint8_t) ((color_value >> 8) & 0xFF);
-	parameters[3] = (uint8_t) (color_value & 0xFF);
+	HAL_GPIO_WritePin (device->cs_port, device->cs_pin, GPIO_PIN_RESET);
 
-	return ILI9341_Transmit_Irregular_Data (device, ILI9341_COMMAND_MEMORY_WRITE, 3, parameters);
+	ILI9341_Transmit_Cmd (device, ILI9341_COMMAND_RAMWR, true);
+	uint8_t data[] = { (color_value >> 16) & 0xFC, (color_value >> 8) & 0xFC, color_value & 0xFC };
+	ILI9341_Transmit_Data (device, data, sizeof (data), true);
+
+//	uint8_t cmd = ILI9341_COMMAND_RAMWR;
+//	HAL_GPIO_WritePin (device->dc_port, device->dc_pin, GPIO_PIN_RESET);
+//	HAL_SPI_Transmit (device->spi_handle, &cmd, sizeof (cmd), 100);
+//	uint8_t data[] = { (color_value >> 16) & 0xFC, (color_value >> 8) & 0xFC, color_value & 0xFC };
+//	HAL_GPIO_WritePin (device->dc_port, device->dc_pin, GPIO_PIN_SET);
+//	HAL_SPI_Transmit (device->spi_handle, data, sizeof (data), 100);
+
+	HAL_GPIO_WritePin (device->cs_port, device->cs_pin, GPIO_PIN_SET);
+	return HAL_OK;
 }
+
+HAL_StatusTypeDef ILI9341_Write_Pixels (ILI9341_t* device, uint32_t* color_values, uint8_t length) {
+	HAL_GPIO_WritePin (device->cs_port, device->cs_pin, GPIO_PIN_RESET);
+
+	ILI9341_Transmit_Cmd (device, ILI9341_COMMAND_RAMWR, true); // PUT THIS INTO THE LOOP
+	uint8_t data[3] = { 0 };
+	data[0] = (color_values[0] >> 16) & 0xFC;
+	data[1] = (color_values[0] >> 8)  & 0xFC;
+	data[2] = (color_values[0])       & 0xFC;
+	ILI9341_Transmit_Data (device, data, sizeof (data), true);
+
+	for (uint8_t i = 1; i < length; i++) {
+		ILI9341_Transmit_Cmd (device, ILI9341_COMMAND_W_M_C, true);
+		data[0] = (color_values[i] >> 16) & 0xFC;
+		data[1] = (color_values[i] >> 8)  & 0xFC;
+		data[2] = (color_values[i])       & 0xFC;
+		ILI9341_Transmit_Data (device, data, sizeof (data), true);
+	}
+
+	HAL_GPIO_WritePin (device->cs_port, device->cs_pin, GPIO_PIN_SET);
+	return HAL_OK;
+}
+
+HAL_StatusTypeDef ILI9341_Write_Character (ILI9341_t* device, char character) {
+	return HAL_OK;
+}
+
 
 /*
  * LOW-LEVEL FUNCTIONS
  */
 
-HAL_StatusTypeDef ILI9341_Transmit (ILI9341_t* device, uint8_t command) {
-	HAL_GPIO_WritePin (device->cs_port, device->cs_pin, GPIO_PIN_RESET);
-	HAL_GPIO_WritePin (device->dc_port, device->dc_pin, GPIO_PIN_RESET);
-	HAL_StatusTypeDef status = HAL_SPI_Transmit (device->spi_handle, &command, 1, 100);
-	HAL_GPIO_WritePin (device->cs_port, device->cs_pin, GPIO_PIN_SET);
-	return status;
-}
+HAL_StatusTypeDef ILI9341_Transmit_Cmd (ILI9341_t* device, uint8_t cmd, bool cs_set_low) {
+	if (!cs_set_low)	HAL_GPIO_WritePin (device->cs_port, device->cs_pin, GPIO_PIN_RESET);
 
-HAL_StatusTypeDef ILI9341_Transmit_Data (ILI9341_t* device, uint8_t command, enum rw_length length, uint8_t* parameters) {
-	HAL_GPIO_WritePin (device->cs_port, device->cs_pin, GPIO_PIN_RESET);
 	HAL_GPIO_WritePin (device->dc_port, device->dc_pin, GPIO_PIN_RESET);
-	HAL_StatusTypeDef status = HAL_SPI_Transmit (device->spi_handle, &command, 1, 100);
+	HAL_SPI_Transmit (device->spi_handle, &cmd, sizeof (cmd), 100);
+
+	return HAL_OK;
+}
+HAL_StatusTypeDef ILI9341_Transmit_Data (ILI9341_t* device, uint8_t* data, uint8_t length, bool cs_set_low) {
+	if (!cs_set_low)	HAL_GPIO_WritePin (device->cs_port, device->cs_pin, GPIO_PIN_RESET);
+
 	HAL_GPIO_WritePin (device->dc_port, device->dc_pin, GPIO_PIN_SET);
-	status = HAL_SPI_Transmit (device->spi_handle, parameters, length, 100);
-	HAL_GPIO_WritePin (device->dc_port, device->dc_pin, GPIO_PIN_RESET);
-	HAL_GPIO_WritePin (device->cs_port, device->cs_pin, GPIO_PIN_SET);
-	return status;
+	HAL_SPI_Transmit (device->spi_handle, data, sizeof (data), 100);
+
+	return HAL_OK;
 }
 
-HAL_StatusTypeDef ILI9341_Transmit_Irregular_Data (ILI9341_t* device, uint8_t command, uint8_t param_length, uint8_t* parameters) {
-	HAL_GPIO_WritePin (device->cs_port, device->cs_pin, GPIO_PIN_RESET);
-	HAL_GPIO_WritePin (device->dc_port, device->dc_pin, GPIO_PIN_RESET);
-	HAL_StatusTypeDef status = HAL_SPI_Transmit (device->spi_handle, &command, 1, 100);
-	HAL_GPIO_WritePin (device->dc_port, device->dc_pin, GPIO_PIN_SET);
-	status = HAL_SPI_Transmit (device->spi_handle, parameters, param_length, 100);
-	HAL_GPIO_WritePin (device->dc_port, device->dc_pin, GPIO_PIN_RESET);
-	HAL_GPIO_WritePin (device->cs_port, device->cs_pin, GPIO_PIN_SET);
-	return status;
-}
-
-HAL_StatusTypeDef ILI9341_Receive (ILI9341_t* device, enum rw_length length, uint8_t command, uint8_t* read_buffer) {
-	HAL_GPIO_WritePin (device->cs_port, device->cs_pin, GPIO_PIN_RESET);
-	HAL_GPIO_WritePin (device->dc_port, device->dc_pin, GPIO_PIN_RESET);
-	HAL_StatusTypeDef status = HAL_SPI_Transmit (device->spi_handle, &command, 1, 100);
-	HAL_GPIO_WritePin (device->dc_port, device->dc_pin, GPIO_PIN_SET);
-	status = HAL_SPI_Receive (device->spi_handle, read_buffer, length, 100);
-	HAL_GPIO_WritePin (device->dc_port, device->dc_pin, GPIO_PIN_RESET);
-	HAL_GPIO_WritePin (device->cs_port, device->cs_pin, GPIO_PIN_SET);
-	return status;
-}
-
-//HAL_StatusTypeDef ILI9341_Receive (ILI9341_t* device, uint8_t com, uint8_t* data) {
-//	return HAL_OK;
-//}
-//
-//HAL_StatusTypeDef ILI9341_Transmit_Receive (ILI9341_t* device, uint8_t com, uint8_t* t_data, uint8_t* r_data) {
-//	return HAL_OK;
-//}
-//
-//HAL_StatusTypeDef ILI9341_Transmit_Multiple (ILI9341_t* device, uint8_t com, uint8_t* data, uint8_t length);
-//HAL_StatusTypeDef ILI9341_Receive_Multiple (ILI9341_t* device, uint8_t com, uint8_t* data, uint8_t length);
-//HAL_StatusTypeDef ILI9341_Transmit_Multiple_Receive (ILI9341_t* device, uint8_t com, uint8_t* t_data, uint8_t* r_data, uint8_t t_length);
-//HAL_StatusTypeDef ILI9341_Transmit_Receive_Multiple (ILI9341_t* device, uint8_t com, uint8_t* t_data, uint8_t* r_data, uint8_t r_length);
-//HAL_StatusTypeDef ILI9341_Transmit_Multiple_Receive_Multiple (ILI9341_t* device, uint8_t com, uint8_t* t_data, uint8_t* r_data, uint8_t t_length, uint8_t r_length);

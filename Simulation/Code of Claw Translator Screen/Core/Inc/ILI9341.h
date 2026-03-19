@@ -9,6 +9,7 @@
 #define INC_ILI9341_H_
 
 #include "stm32f3xx_hal.h"
+#include "stdbool.h"
 
 /*
  * MISC
@@ -20,25 +21,22 @@
 #define COLOR_GREEN		0x00FF00
 #define COLOR_BLUE		0x0000FF
 
-enum rw_length { _8_BITS = 1, _16_BITS = 2, _24_BITS = 4, _32_BITS = 5 };
-
 /*
  * REGISTERS
  */
 
-#define ILI9341_COMMAND_NOP						0x00
-#define ILI9341_COMMAND_RESET					0x01
-#define ILI9341_COMMAND_READ_ID					0x04
-#define ILI9341_COMMAND_READ_DISPLAY_STATUS		0x09
-#define ILI9341_COMMAND_READ_POWER_MODE			0x0A
-#define ILI9341_COMMAND_SLEEP_OUT				0x11
-#define ILI9341_COMMAND_DISPLAY_OFF				0x28
-#define ILI9341_COMMAND_DISPLAY_ON				0x29
-#define ILI9341_COMMAND_COLOR_SET				0x2D
-#define ILI9341_COMMAND_COLUMN_ADDRESS_SET		0x2A
-#define ILI9341_COMMAND_PAGE_ADDRESS_SET		0x2B
-#define ILI9341_COMMAND_MEMORY_WRITE			0x2C
-#define ILI9341_COMMAND_COLOR_SET				0x2D
+#define ILI9341_COMMAND_SWRESET			0x01
+#define ILI9341_COMMAND_SLPOUT			0x11
+#define ILI9341_COMMAND_DISPON			0x29
+#define ILI9341_COMMAND_CASET			0x2A
+#define ILI9341_COMMAND_PASET			0x2B
+#define ILI9341_COMMAND_RAMWR			0x2C
+#define ILI9341_COMMAND_MADCTL			0x36
+#define ILI9341_COMMAND_W_M_C			0x3C
+#define ILI9341_COMMAND_PGAMCTRL		0xE0
+#define ILI9341_COMMAND_NGAMCTRL		0xE1
+#define ILI9341_COMMAND_ENABLE_3G		0xF2
+
 
 /*
  * STRUCT
@@ -48,6 +46,8 @@ typedef struct {
 	SPI_HandleTypeDef* spi_handle;
 	GPIO_TypeDef* cs_port,* rs_port,* dc_port;
 	uint16_t cs_pin, rs_pin, dc_pin;
+	uint16_t x_pos, y_pos;
+	uint16_t win_s_x, win_e_x, win_s_y, win_e_y;
 } ILI9341_t;
 
 /*
@@ -61,31 +61,18 @@ HAL_StatusTypeDef ILI9341_Init (ILI9341_t* device, SPI_HandleTypeDef* spi_handle
  */
 
 HAL_StatusTypeDef ILI9341_Reset (ILI9341_t* device);
-HAL_StatusTypeDef ILI9341_Sleep_Out (ILI9341_t* device);
-HAL_StatusTypeDef ILI9341_Display_On (ILI9341_t* device);
-HAL_StatusTypeDef ILI9341_Set_Column_Address (ILI9341_t* device, uint16_t start_column_address, uint16_t end_column_address);
-HAL_StatusTypeDef ILI9341_Set_Page_Address (ILI9341_t* device, uint16_t start_page_address, uint16_t end_page_address);
+HAL_StatusTypeDef ILI9341_Set_Window_Location (ILI9341_t* device, uint16_t x_left, uint16_t x_right, uint16_t y_up, uint16_t y_down);
+//HAL_StatusTypeDef ILI9341_Set_Rotation LOOK FOR THE COMMAND FOR THIS
 HAL_StatusTypeDef ILI9341_Write_Pixel (ILI9341_t* device, uint32_t color_value);
+HAL_StatusTypeDef ILI9341_Write_Pixels (ILI9341_t* device, uint32_t* color_values, uint8_t length);
+HAL_StatusTypeDef ILI9341_Write_Character (ILI9341_t* device, char character);
 
 
 /*
  * LOW-LEVEL FUNCTIONS
  */
 
-HAL_StatusTypeDef ILI9341_Transmit (ILI9341_t* device, uint8_t command);
-HAL_StatusTypeDef ILI9341_Transmit_Data (ILI9341_t* device, uint8_t command, enum rw_length length, uint8_t* parameters);
-HAL_StatusTypeDef ILI9341_Transmit_Irregular_Data (ILI9341_t* device, uint8_t command, uint8_t param_length, uint8_t* parameters);
-
-HAL_StatusTypeDef ILI9341_Receive (ILI9341_t* device, enum rw_length length, uint8_t command, uint8_t* read_buffer);
-
-
-//HAL_StatusTypeDef ILI9341_Receive (ILI9341_t* device, uint8_t com, uint8_t* data);
-//HAL_StatusTypeDef ILI9341_Transmit_Receive (ILI9341_t* device, uint8_t com, uint8_t* t_data, uint8_t* r_data);
-//
-//HAL_StatusTypeDef ILI9341_Transmit_Multiple (ILI9341_t* device, uint8_t com, uint8_t* data, uint8_t length);
-//HAL_StatusTypeDef ILI9341_Receive_Multiple (ILI9341_t* device, uint8_t com, uint8_t* data, uint8_t length);
-//HAL_StatusTypeDef ILI9341_Transmit_Multiple_Receive (ILI9341_t* device, uint8_t com, uint8_t* t_data, uint8_t* r_data, uint8_t t_length);
-//HAL_StatusTypeDef ILI9341_Transmit_Receive_Multiple (ILI9341_t* device, uint8_t com, uint8_t* t_data, uint8_t* r_data, uint8_t r_length);
-//HAL_StatusTypeDef ILI9341_Transmit_Multiple_Receive_Multiple (ILI9341_t* device, uint8_t com, uint8_t* t_data, uint8_t* r_data, uint8_t t_length, uint8_t r_length);
+HAL_StatusTypeDef ILI9341_Transmit_Cmd (ILI9341_t* device, uint8_t cmd, bool cs_set_low);
+HAL_StatusTypeDef ILI9341_Transmit_Data (ILI9341_t* device, uint8_t* data, uint8_t length, bool cs_set_low);
 
 #endif /* INC_ILI9341_H_ */
