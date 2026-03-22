@@ -102,35 +102,16 @@ int main(void)
   ILI9341_Init(&ili9341, &hspi2, CS_GPIO_Port, CS_Pin, RS_GPIO_Port, RS_Pin, DC_GPIO_Port, DC_Pin);
 
 
-
-  ILI9341_Set_Window_Location (&ili9341, 0x00A0, 0x00A9, 0x00A0, 0x00AF);
-  uint32_t values[] = { 0x0000FC, 0x00FC00, 0x00FC00, 0x00FC00,
-		  	  	  	  0x00FC00, 0x00FC00, 0x00FC00, 0x0000FC };
-  ILI9341_Write_Pixels(&ili9341, values, sizeof (values) / sizeof (uint32_t));
-
-
-//  HAL_GPIO_WritePin(CS_GPIO_Port, CS_Pin, GPIO_PIN_RESET);
-//  {
-//	  uint8_t cmd = 0x2C;
-//	  HAL_GPIO_WritePin(DC_GPIO_Port, DC_Pin, GPIO_PIN_RESET);
-//	  HAL_SPI_Transmit(&hspi2, &cmd, sizeof(cmd), HAL_MAX_DELAY);
-//	  uint8_t data[] = { 0x00, 0xFC, 0x00,
-//			  	  	  	 0x00, 0xFC, 0x00,
-//						 0x00, 0xFC, 0x00,
-//						 0x00, 0xFC, 0x00,
-//						 0x00, 0xFC, 0x00,
-//						 0x00, 0xFC, 0x00,
-//						 0x00, 0xFC, 0x00,
-//						 0x00, 0xFC, 0x00};
-//	  HAL_GPIO_WritePin(DC_GPIO_Port, DC_Pin, GPIO_PIN_SET);
-//	  HAL_SPI_Transmit(&hspi2, data, sizeof(data), HAL_MAX_DELAY);
-//  }
-
-//  HAL_GPIO_WritePin(CS_GPIO_Port, CS_Pin, GPIO_PIN_SET);
+  ILI9341_Set_Window_Location (&ili9341, 0x001, 0x0001 + (ROW_SIZE * ili9341.char_size) - 1, 0x0001, 0x0001 + (COL_SIZE * ili9341.char_size) - 1);
+  ILI9341_Fill_Screen (&ili9341, COLOR_WHITE);
+  ILI9341_Write_String(&ili9341, "Hello WORLD.");
+//  ILI9341_Write_Character(&ili9341, 'H');
+//  ILI9341_Write_Character(&ili9341, 'E');
+//  ILI9341_Write_Character(&ili9341, 'l');
+//  ILI9341_Write_Character(&ili9341, 'l');
+//  ILI9341_Write_Character(&ili9341, 'o');
 
 
-//  sprintf (message, "%s\r\n", stat == HAL_OK ? "YIPEEEEE" : "NOOOOOOOOOOO");
-//  HAL_UART_Transmit (&huart2, (uint8_t *) message, 50, 100);
   /* USER CODE END 2 */
 
   /* Infinite loop */

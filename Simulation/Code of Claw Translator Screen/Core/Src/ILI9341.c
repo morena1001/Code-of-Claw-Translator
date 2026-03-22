@@ -7,6 +7,9 @@
 
 #include "ILI9341.h"
 #include "stdlib.h"
+#include "math.h"
+#include "string.h"
+#include "stdio.h"
 
 /*
  * INITIALIZATION FUNCTION
@@ -20,6 +23,14 @@ HAL_StatusTypeDef ILI9341_Init (ILI9341_t* device, SPI_HandleTypeDef* spi_handle
 	device->rs_pin = rs_pin;
 	device->dc_port = dc_port;
 	device->dc_pin = dc_pin;
+
+	device->x_pos = 0;
+	device->y_pos = 0;
+	device->win_s_x = 0;
+	device->win_e_x = 0;
+	device->win_s_y = 0;
+	device->win_e_y = 0;
+	device->char_size = 3;
 
 //	HAL_StatusTypeDef status = HAL_ERROR;
 
@@ -129,7 +140,7 @@ HAL_StatusTypeDef ILI9341_Write_Pixel (ILI9341_t* device, uint32_t color_value) 
 	return HAL_OK;
 }
 
-HAL_StatusTypeDef ILI9341_Write_Pixels (ILI9341_t* device, uint32_t* color_values, uint8_t length) {
+HAL_StatusTypeDef ILI9341_Write_Pixels (ILI9341_t* device, uint32_t* color_values, uint16_t length) {
 	HAL_GPIO_WritePin (device->cs_port, device->cs_pin, GPIO_PIN_RESET);
 
 	ILI9341_Transmit_Cmd (device, ILI9341_COMMAND_RAMWR, true); // PUT THIS INTO THE LOOP
@@ -139,7 +150,7 @@ HAL_StatusTypeDef ILI9341_Write_Pixels (ILI9341_t* device, uint32_t* color_value
 	data[2] = (color_values[0])       & 0xFC;
 	ILI9341_Transmit_Data (device, data, sizeof (data), true);
 
-	for (uint8_t i = 1; i < length; i++) {
+	for (uint16_t i = 1; i < length; i++) {
 		ILI9341_Transmit_Cmd (device, ILI9341_COMMAND_W_M_C, true);
 		data[0] = (color_values[i] >> 16) & 0xFC;
 		data[1] = (color_values[i] >> 8)  & 0xFC;
@@ -151,10 +162,81 @@ HAL_StatusTypeDef ILI9341_Write_Pixels (ILI9341_t* device, uint32_t* color_value
 	return HAL_OK;
 }
 
-HAL_StatusTypeDef ILI9341_Write_Character (ILI9341_t* device, char character) {
+void ILI9341_Change_Font_Size (ILI9341_t* device, uint8_t size) {
+	device->char_size = size;
+
+}
+HAL_StatusTypeDef ILI9341_Write_Character (ILI9341_t* device, char letter) {
+	// Allocate the memory to send all of the data for a character at the same time
+    uint32_t* colors = malloc (sizeof (uint32_t) * ROW_SIZE * device->char_size * COL_SIZE * device->char_size);
+
+	// Grab the pixel format at size 1 for a given character
+	uint8_t format[COL_SIZE];
+	if (letter > 96)	letter -= 32; // Make all letters capitalized
+	memcpy (format, GET_PIXELS(letter), sizeof (uint8_t) * COL_SIZE);
+
+	// Add color to the pixel format and copy it to the big array
+	for (uint8_t i = 0; i < COL_SIZE * device->char_size; i++) {
+		for (uint8_t j = ROW_SIZE * device->char_size; j > 0; j--) {
+			uint8_t c = ceil (i / device->char_size);
+			uint8_t d = ceil ((float) j / (float) device->char_size) - 1;
+
+			if ((format[c] >> d) & 1)   colors[((i + 1) * ROW_SIZE * device->char_size) - j] = COLOR_BLACK;
+			else                        colors[((i + 1) * ROW_SIZE * device->char_size) - j] = COLOR_WHITE;
+		}
+	}
+
+	ILI9341_Write_Pixels(device, colors, ROW_SIZE * device->char_size * COL_SIZE * device->char_size);
+	free (colors);
+
+	ILI9341_Set_Window_Location (device, device->win_e_x + CHAR_SPACE, device->win_e_x + CHAR_SPACE + (ROW_SIZE * device->char_size) - 1, device->win_s_y, device->win_e_y);
+
 	return HAL_OK;
 }
 
+HAL_StatusTypeDef ILI9341_Write_String (ILI9341_t* device, char* string) {
+	uint8_t i = 0;
+	while (string[i] != '\0' && string[i] != '\n')
+		ILI9341_Write_Character(device, string[i++]);
+
+	return HAL_OK;
+}
+
+HAL_StatusTypeDef ILI9341_Fill_Screen (ILI9341_t* device, uint32_t color_value) {
+	HAL_GPIO_WritePin (device->cs_port, device->cs_pin, GPIO_PIN_RESET);
+
+	uint16_t prev_x_left = device->win_s_x;
+	uint16_t prev_x_right = device->win_e_x;
+	uint16_t prev_y_up = device->win_s_y;
+	uint16_t prev_y_down = device->win_e_y;
+
+	ILI9341_Set_Window_Location (device, 0x0000, SCREEN_WIDTH - 1, 0x0000, SCREEN_HEIGHT - 1);
+
+	HAL_GPIO_WritePin (device->cs_port, device->cs_pin, GPIO_PIN_RESET);
+
+	ILI9341_Transmit_Cmd (device, ILI9341_COMMAND_RAMWR, true); // PUT THIS INTO THE LOOP
+	uint8_t data[3] = { 0 };
+	data[0] = (color_value >> 16) & 0xFC;
+	data[1] = (color_value >> 8)  & 0xFC;
+	data[2] = (color_value)       & 0xFC;
+	ILI9341_Transmit_Data (device, data, sizeof (data), true);
+
+	for (uint16_t i = 1; i < SCREEN_WIDTH; i++) {
+		for (uint16_t j = 0; j < SCREEN_HEIGHT; j++) {
+			ILI9341_Transmit_Cmd (device, ILI9341_COMMAND_W_M_C, true);
+			ILI9341_Transmit_Data (device, data, sizeof (data), true);
+		}
+	}
+
+	HAL_GPIO_WritePin (device->cs_port, device->cs_pin, GPIO_PIN_SET);
+
+	device-> win_s_x = prev_x_left;
+	device->win_e_x = prev_x_right;
+	device->win_s_y = prev_y_up;
+	device->win_e_y = prev_y_down;
+
+	return HAL_OK;
+}
 
 /*
  * LOW-LEVEL FUNCTIONS
