@@ -102,10 +102,11 @@ int main(void)
   ILI9341_Init(&ili9341, &hspi2, CS_GPIO_Port, CS_Pin, RS_GPIO_Port, RS_Pin, DC_GPIO_Port, DC_Pin);
 
 
-  ILI9341_Set_Window_Location (&ili9341, 0x001, 0x0001 + (ROW_SIZE * ili9341.char_size) - 1, 0x0001, 0x0001 + (COL_SIZE * ili9341.char_size) - 1);
-  ILI9341_Fill_Screen (&ili9341, COLOR_WHITE);
-  ILI9341_Write_String(&ili9341, "Hello WORLD.");
-//  ILI9341_Write_Character(&ili9341, 'H');
+//  ILI9341_Set_Window_Location (&ili9341, 0x001, 0x0001 + (ROW_SIZE * ili9341.char_size) - 1, 0x0001, 0x0001 + (COL_SIZE * ili9341.char_size) - 1);
+//  ILI9341_Fill_Screen (&ili9341, COLOR_WHITE);
+//  ILI9341_Write_String(&ili9341, "Hello WORLD.");
+  HAL_Delay (1000);
+  ILI9341_Write_Character(&ili9341, 'H');
 //  ILI9341_Write_Character(&ili9341, 'E');
 //  ILI9341_Write_Character(&ili9341, 'l');
 //  ILI9341_Write_Character(&ili9341, 'l');

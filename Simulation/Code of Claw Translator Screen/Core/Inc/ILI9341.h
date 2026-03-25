@@ -15,17 +15,26 @@
  * MISC
  */
 
-#define COL_SIZE		7
-#define ROW_SIZE 		5
-#define CHAR_SPACE		2
-#define SCREEN_WIDTH	240
-#define SCREEN_HEIGHT	320
+#define COL_SIZE			7
+#define ROW_SIZE 			5
+#define CHAR_SPACE			2
+#define SCREEN_WIDTH		240
+#define SCREEN_HEIGHT		320
+#define CHAR_COL_LENGTH		13
+#define CHAR_ROW_LENGTH		14
+#define DEF_CHAR_SIZE		3
+
+#define X_LEFT_PADDING		1
+#define Y_TOP_PADDING		11
+#define WINDOW_WIDTH		17
+#define WINDOW_HEIGHT		23
 
 #define COLOR_WHITE		0xFFFFFF
 #define COLOR_BLACK		0x000000
 #define COLOR_RED		0xFF0000
 #define COLOR_GREEN		0x00FF00
 #define COLOR_BLUE		0x0000FF
+#define COLOR_YELLOW	0xFFFF00
 
 #define PIXELS_A	(uint8_t[]) { 0x0E, 0x11, 0x11, 0x11, 0x1F, 0x11, 0x11 }
 #define PIXELS_B	(uint8_t[]) { 0x1E, 0x11, 0x11, 0x1E, 0x11, 0x11, 0x1E }
@@ -55,6 +64,7 @@
 #define PIXELS_Z	(uint8_t[]) { 0x1F, 0x01, 0x02, 0x04, 0x08, 0x10, 0x1F }
 #define PIXELS_PRD	(uint8_t[]) { 0x00, 0x00, 0x00, 0x00, 0x00, 0x0C, 0x0C }
 #define PIXELS_SPC	(uint8_t[]) { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 }
+#define PIXELS_CRS	(uint8_t[]) { 0x00, 0x00, 0x00, 0x00, 0x00, 0x1F, 0x1F }
 
 #define GET_PIXELS(let)	(let == 'A' ? PIXELS_A : (let == 'B' ? PIXELS_B : (let == 'C' ? PIXELS_C : (let == 'D' ? PIXELS_D : (let == 'E' ? PIXELS_E : (let == 'F' ? PIXELS_F : (let == 'G' ? PIXELS_G : (let == 'H' ? PIXELS_H : (let == 'I' ? PIXELS_I : (let == 'J' ? PIXELS_J : (let == 'K' ? PIXELS_K : (let == 'L' ? PIXELS_L : (let == 'M' ? PIXELS_M : (let == 'N' ? PIXELS_N : (let == 'O' ? PIXELS_O : (let == 'P' ? PIXELS_P : (let == 'Q' ? PIXELS_Q : (let == 'R' ? PIXELS_R : (let == 'S' ? PIXELS_S : (let == 'T' ? PIXELS_T : (let == 'U' ? PIXELS_U : (let == 'V' ? PIXELS_V : (let == 'W' ? PIXELS_W : (let == 'X' ? PIXELS_X : (let == 'Y' ? PIXELS_Y : (let == 'Z' ? PIXELS_Z : (let == '.' ? PIXELS_PRD : (let == ' ' ? PIXELS_SPC : PIXELS_SPC))))))))))))))))))))))))))))
 
@@ -86,6 +96,8 @@ typedef struct {
 	uint16_t x_pos, y_pos;
 	uint16_t win_s_x, win_e_x, win_s_y, win_e_y;
 	uint8_t char_size;
+	char** characters;
+	uint32_t bg_color, char_color, cursor_color;
 } ILI9341_t;
 
 /*
@@ -100,13 +112,17 @@ HAL_StatusTypeDef ILI9341_Init (ILI9341_t* device, SPI_HandleTypeDef* spi_handle
 
 HAL_StatusTypeDef ILI9341_Reset (ILI9341_t* device);
 HAL_StatusTypeDef ILI9341_Set_Window_Location (ILI9341_t* device, uint16_t x_left, uint16_t x_right, uint16_t y_up, uint16_t y_down);
+HAL_StatusTypeDef ILI9341_Set_Window_Location_Size (ILI9341_t* device, uint16_t x_start, uint16_t width, uint16_t y_start, uint16_t height);
 //HAL_StatusTypeDef ILI9341_Set_Rotation LOOK FOR THE COMMAND FOR THIS
 HAL_StatusTypeDef ILI9341_Write_Pixel (ILI9341_t* device, uint32_t color_value);
 HAL_StatusTypeDef ILI9341_Write_Pixels (ILI9341_t* device, uint32_t* color_values, uint16_t length);
 void ILI9341_Change_Font_Size (ILI9341_t* device, uint8_t size);
 HAL_StatusTypeDef ILI9341_Write_Character (ILI9341_t* device, char letter);
+HAL_StatusTypeDef ILI9341_Rewrite_Character (ILI9341_t* device, char letter);
+HAL_StatusTypeDef ILI9341_Delete_Character (ILI9341_t* device);
 HAL_StatusTypeDef ILI9341_Write_String (ILI9341_t* device, char* string);
 HAL_StatusTypeDef ILI9341_Fill_Screen (ILI9341_t* device, uint32_t color_value);
+HAL_StatusTypeDef ILI9341_Update_Cursor (ILI9341_t* device);
 
 
 /*
