@@ -123,7 +123,7 @@ HAL_StatusTypeDef ILI9341_Delete_Character (ILI9341_t* device);
 HAL_StatusTypeDef ILI9341_Write_String (ILI9341_t* device, char* string);
 HAL_StatusTypeDef ILI9341_Fill_Screen (ILI9341_t* device, uint32_t color_value);
 HAL_StatusTypeDef ILI9341_Update_Cursor (ILI9341_t* device);
-
+HAL_StatusTypeDef ILI9341_Clear_Cursor (ILI9341_t* device);
 
 /*
  * LOW-LEVEL FUNCTIONS

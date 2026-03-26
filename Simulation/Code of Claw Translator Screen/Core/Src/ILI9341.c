@@ -32,7 +32,7 @@ HAL_StatusTypeDef ILI9341_Init (ILI9341_t* device, SPI_HandleTypeDef* spi_handle
 	// Initialize default colors for bg and char
 	device->bg_color = COLOR_WHITE;
 	device->char_color = COLOR_BLACK;
-	device->cursor_color = COLOR_YELLOW;
+	device->cursor_color = COLOR_BLUE;
 
 	device->characters = malloc (sizeof (char*) * CHAR_COL_LENGTH);
 	for (uint8_t i = 0; i < CHAR_COL_LENGTH; i++)		device->characters[i] = malloc (sizeof (char) * CHAR_ROW_LENGTH);
@@ -84,7 +84,6 @@ HAL_StatusTypeDef ILI9341_Init (ILI9341_t* device, SPI_HandleTypeDef* spi_handle
 
     // Set cursor
     ILI9341_Update_Cursor (device);
-    ILI9341_Set_Window_Location (device, 0x0001, 0x0001 + (ROW_SIZE * DEF_CHAR_SIZE) - 1, 0x000B, 0x000B + (COL_SIZE * DEF_CHAR_SIZE) - 1);
 
 //	return status;
 	return HAL_OK;
@@ -242,6 +241,8 @@ HAL_StatusTypeDef ILI9341_Write_Character (ILI9341_t* device, char letter) {
 	// Add character to array
 	device->characters[device->y_pos][device->x_pos] = letter;
 
+	ILI9341_Clear_Cursor (device);
+
 	// Update character position
 	if (device->x_pos == CHAR_ROW_LENGTH - 1) {
 		device->x_pos = 0;
@@ -288,6 +289,8 @@ HAL_StatusTypeDef ILI9341_Rewrite_Character (ILI9341_t* device, char letter) {
 }
 
 HAL_StatusTypeDef ILI9341_Delete_Character (ILI9341_t* device) {
+	ILI9341_Clear_Cursor (device);
+
 	// Update character position
 	if (device->x_pos == 0) {
 		device->x_pos = CHAR_ROW_LENGTH - 1;
@@ -339,10 +342,12 @@ HAL_StatusTypeDef ILI9341_Fill_Screen (ILI9341_t* device, uint32_t color_value) 
 
 	HAL_GPIO_WritePin (device->cs_port, device->cs_pin, GPIO_PIN_SET);
 
-	device-> win_s_x = prev_x_left;
+	device->win_s_x = prev_x_left;
 	device->win_e_x = prev_x_right;
 	device->win_s_y = prev_y_up;
 	device->win_e_y = prev_y_down;
+
+	ILI9341_Set_Window_Location (device, device->win_s_x, device->win_e_x, device->win_s_y, device->win_e_y);
 
 	return HAL_OK;
 }
@@ -359,7 +364,7 @@ HAL_StatusTypeDef ILI9341_Update_Cursor (ILI9341_t* device) {
 
 	HAL_GPIO_WritePin (device->cs_port, device->cs_pin, GPIO_PIN_RESET);
 	ILI9341_Transmit_Cmd (device, ILI9341_COMMAND_RAMWR, true);
-	uint8_t data[3] = { (COLOR_YELLOW >> 16) & 0xFC, (COLOR_YELLOW >> 8) & 0xFC, COLOR_YELLOW & 0xFC };
+	uint8_t data[3] = { (device->cursor_color >> 16) & 0xFC, (device->cursor_color >> 8) & 0xFC, device->cursor_color & 0xFC };
 	HAL_GPIO_WritePin (device->dc_port, device->dc_pin, GPIO_PIN_SET);
 	for (uint8_t i = 0; i < (device->win_e_x - device->win_s_x); i++) {
 		HAL_SPI_Transmit (device->spi_handle, data, sizeof (data), 100);
@@ -371,6 +376,38 @@ HAL_StatusTypeDef ILI9341_Update_Cursor (ILI9341_t* device) {
 	device->win_e_x = prev_x_right;
 	device->win_s_y = prev_y_up;
 	device->win_e_y = prev_y_down;
+
+	ILI9341_Set_Window_Location (device, device->win_s_x, device->win_e_x, device->win_s_y, device->win_e_y);
+
+	return HAL_OK;
+}
+
+HAL_StatusTypeDef ILI9341_Clear_Cursor (ILI9341_t* device) {
+	HAL_GPIO_WritePin (device->cs_port, device->cs_pin, GPIO_PIN_RESET);
+
+	uint16_t prev_x_left = device->win_s_x;
+	uint16_t prev_x_right = device->win_e_x;
+	uint16_t prev_y_up = device->win_s_y;
+	uint16_t prev_y_down = device->win_e_y;
+
+	ILI9341_Set_Window_Location (device, device->win_s_x - 1, device->win_e_x + 1, device->win_e_y + 1, device->win_e_y + 2);
+
+	HAL_GPIO_WritePin (device->cs_port, device->cs_pin, GPIO_PIN_RESET);
+	ILI9341_Transmit_Cmd (device, ILI9341_COMMAND_RAMWR, true);
+	uint8_t data[3] = { (device->bg_color >> 16) & 0xFC, (device->bg_color >> 8) & 0xFC, device->bg_color & 0xFC };
+	HAL_GPIO_WritePin (device->dc_port, device->dc_pin, GPIO_PIN_SET);
+	for (uint8_t i = 0; i < (device->win_e_x - device->win_s_x); i++) {
+		HAL_SPI_Transmit (device->spi_handle, data, sizeof (data), 100);
+	}
+
+	HAL_GPIO_WritePin (device->cs_port, device->cs_pin, GPIO_PIN_SET);
+
+	device-> win_s_x = prev_x_left;
+	device->win_e_x = prev_x_right;
+	device->win_s_y = prev_y_up;
+	device->win_e_y = prev_y_down;
+
+	ILI9341_Set_Window_Location (device, device->win_s_x, device->win_e_x, device->win_s_y, device->win_e_y);
 
 	return HAL_OK;
 }

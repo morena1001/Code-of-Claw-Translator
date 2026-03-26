@@ -104,13 +104,17 @@ int main(void)
 
 //  ILI9341_Set_Window_Location (&ili9341, 0x001, 0x0001 + (ROW_SIZE * ili9341.char_size) - 1, 0x0001, 0x0001 + (COL_SIZE * ili9341.char_size) - 1);
 //  ILI9341_Fill_Screen (&ili9341, COLOR_WHITE);
-//  ILI9341_Write_String(&ili9341, "Hello WORLD.");
-  HAL_Delay (1000);
-  ILI9341_Write_Character(&ili9341, 'H');
+  ILI9341_Write_String(&ili9341, "Hello");
+  HAL_Delay (500);
+  ILI9341_Delete_Character (&ili9341);
+  HAL_Delay (500);
+  ILI9341_Rewrite_Character (&ili9341, 'W');
+  HAL_Delay (500);
+//  ILI9341_Write_Character(&ili9341, 'H');
 //  ILI9341_Write_Character(&ili9341, 'E');
 //  ILI9341_Write_Character(&ili9341, 'l');
 //  ILI9341_Write_Character(&ili9341, 'l');
-//  ILI9341_Write_Character(&ili9341, 'o');
+  ILI9341_Write_Character(&ili9341, 'o');
 
 
   /* USER CODE END 2 */
