@@ -21,7 +21,8 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "stdio.h"
+#include "stdbool.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -45,7 +46,21 @@ SPI_HandleTypeDef hspi2;
 UART_HandleTypeDef huart2;
 
 /* USER CODE BEGIN PV */
+uint8_t ctrl_x  = 0b11011001;
+uint8_t ctrl_y  = 0b10011001;
+uint8_t ctrl_z1 = 0b10111001;
+uint8_t ctrl_z2 = 0b11001001;
 
+uint8_t start_x  = 0;
+uint8_t end_x  = 0;
+uint8_t start_y  = 0;
+uint8_t end_y  = 0;
+uint8_t z1 = 0;
+uint8_t z2 = 0;
+
+bool start_pos_taken = false;
+
+char message[50];
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -101,6 +116,47 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+	  HAL_GPIO_WritePin (CS_GPIO_Port, CS_Pin, GPIO_PIN_RESET);
+
+//	  if (!start_pos_taken) {
+		  HAL_SPI_Transmit (&hspi2, &ctrl_x, sizeof (ctrl_x), 100);
+		  HAL_SPI_Receive (&hspi2, &start_x, sizeof (start_x), 100);
+		  HAL_SPI_Transmit (&hspi2, &ctrl_y, sizeof (ctrl_y), 100);
+		  HAL_SPI_Receive (&hspi2, &start_y, sizeof (start_y), 100);
+
+//	  } else {
+//		  HAL_SPI_Transmit (&hspi2, &ctrl_x, sizeof (ctrl_x), 100);
+//		  HAL_SPI_Receive (&hspi2, &end_x, sizeof (end_x), 100);
+//
+//		  HAL_SPI_Transmit (&hspi2, &ctrl_y, sizeof (ctrl_y), 100);
+//		  HAL_SPI_Receive (&hspi2, &end_y, sizeof (end_y), 100);
+//	  }
+//
+//	  HAL_SPI_Transmit (&hspi2, &ctrl_z2, sizeof (ctrl_z2), 100);
+//	  HAL_SPI_Receive (&hspi2, &z2, sizeof (z2), 100);
+////	  if (z2 < 124) {
+//
+//	  HAL_SPI_Transmit (&hspi2, &ctrl_z1, sizeof (ctrl_z1), 100);
+//	  HAL_SPI_Receive (&hspi2, &z1, sizeof (z1), 100);
+//	  if (z1 > 0 && z2 < 124) {
+//		  if (!start_pos_taken) {
+//			  start_pos_taken = true;
+			  sprintf (message, "START x : %.3d | y : %.3d\r\n", start_x, start_y);
+			  HAL_UART_Transmit (&huart2, (uint8_t*) message, 50, 100);
+//		  }
+//	  } else  {
+//		  if (start_pos_taken) {
+//			  start_pos_taken = false;
+//			  sprintf (message, "END   x : %.3d | y : %.3d\r\n", end_x, end_y);
+//			  HAL_UART_Transmit (&huart2, (uint8_t*) message, 50, 100);
+//		  }
+//	  }
+
+	  HAL_GPIO_WritePin (CS_GPIO_Port, CS_Pin, GPIO_PIN_SET);
+
+
+//	  sprintf (message, "x : %.3d | y : %.3d | z1 : %.3d | z2 : %.3d\r\n", receive_x, receive_y, receive_z1, receive_z2);
+//	  HAL_UART_Transmit (&huart2, (uint8_t *) message, 50, 100);
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -202,7 +258,7 @@ static void MX_USART2_UART_Init(void)
 
   /* USER CODE END USART2_Init 1 */
   huart2.Instance = USART2;
-  huart2.Init.BaudRate = 38400;
+  huart2.Init.BaudRate = 9600;
   huart2.Init.WordLength = UART_WORDLENGTH_8B;
   huart2.Init.StopBits = UART_STOPBITS_1;
   huart2.Init.Parity = UART_PARITY_NONE;
@@ -228,12 +284,23 @@ static void MX_USART2_UART_Init(void)
   */
 static void MX_GPIO_Init(void)
 {
+  GPIO_InitTypeDef GPIO_InitStruct = {0};
 /* USER CODE BEGIN MX_GPIO_Init_1 */
 /* USER CODE END MX_GPIO_Init_1 */
 
   /* GPIO Ports Clock Enable */
   __HAL_RCC_GPIOA_CLK_ENABLE();
   __HAL_RCC_GPIOB_CLK_ENABLE();
+
+  /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(CS_GPIO_Port, CS_Pin, GPIO_PIN_RESET);
+
+  /*Configure GPIO pin : CS_Pin */
+  GPIO_InitStruct.Pin = CS_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(CS_GPIO_Port, &GPIO_InitStruct);
 
 /* USER CODE BEGIN MX_GPIO_Init_2 */
 /* USER CODE END MX_GPIO_Init_2 */
