@@ -55,6 +55,8 @@ uint8_t start_x  = 0;
 uint8_t end_x  = 0;
 uint8_t start_y  = 0;
 uint8_t end_y  = 0;
+uint8_t x_val[2]  = { 0 };
+uint8_t y_val[2]  = { 0 };
 uint8_t z1 = 0;
 uint8_t z2 = 0;
 
@@ -119,10 +121,21 @@ int main(void)
 	  HAL_GPIO_WritePin (CS_GPIO_Port, CS_Pin, GPIO_PIN_RESET);
 
 //	  if (!start_pos_taken) {
+//	  HAL_SPI_TransmitReceive (&hspi2, &ctrl_x, &start_x, sizeof (ctrl_x) + sizeof (start_x), 100);
+//	  HAL_SPI_TransmitReceive (&hspi2, &ctrl_y, &start_y, sizeof (ctrl_y) + sizeof (start_y), 100);
+
 		  HAL_SPI_Transmit (&hspi2, &ctrl_x, sizeof (ctrl_x), 100);
-		  HAL_SPI_Receive (&hspi2, &start_x, sizeof (start_x), 100);
+		  HAL_SPI_Receive (&hspi2, x_val, 2, 100);
+		  HAL_GPIO_WritePin (CS_GPIO_Port, CS_Pin, GPIO_PIN_SET);
+		  HAL_GPIO_WritePin (CS_GPIO_Port, CS_Pin, GPIO_PIN_RESET);
 		  HAL_SPI_Transmit (&hspi2, &ctrl_y, sizeof (ctrl_y), 100);
-		  HAL_SPI_Receive (&hspi2, &start_y, sizeof (start_y), 100);
+		  HAL_SPI_Receive (&hspi2, y_val, 2, 100);
+		  HAL_GPIO_WritePin (CS_GPIO_Port, CS_Pin, GPIO_PIN_SET);
+
+//		  HAL_SPI_Transmit (&hspi2, &ctrl_x, sizeof (ctrl_x), 100);
+//		  HAL_SPI_Receive (&hspi2, &start_x, sizeof (start_x), 100);
+//		  HAL_SPI_Transmit (&hspi2, &ctrl_y, sizeof (ctrl_y), 100);
+//		  HAL_SPI_Receive (&hspi2, &start_y, sizeof (start_y), 100);
 
 //	  } else {
 //		  HAL_SPI_Transmit (&hspi2, &ctrl_x, sizeof (ctrl_x), 100);
@@ -141,7 +154,8 @@ int main(void)
 //	  if (z1 > 0 && z2 < 124) {
 //		  if (!start_pos_taken) {
 //			  start_pos_taken = true;
-			  sprintf (message, "START x : %.3d | y : %.3d\r\n", start_x, start_y);
+			  sprintf (message, "x : %.4d | y : %.4d\r\n", ((uint16_t) x_val[0] << 4) | ((uint16_t) x_val[1] >> 4), ((uint16_t) y_val[0] << 4) | ((uint16_t) y_val[1] >> 4)); // 12 bit conversion
+//			  sprintf (message, "START x : %.3d | y : %.3d\r\n", start_x, start_y);
 			  HAL_UART_Transmit (&huart2, (uint8_t*) message, 50, 100);
 //		  }
 //	  } else  {
@@ -151,8 +165,6 @@ int main(void)
 //			  HAL_UART_Transmit (&huart2, (uint8_t*) message, 50, 100);
 //		  }
 //	  }
-
-	  HAL_GPIO_WritePin (CS_GPIO_Port, CS_Pin, GPIO_PIN_SET);
 
 
 //	  sprintf (message, "x : %.3d | y : %.3d | z1 : %.3d | z2 : %.3d\r\n", receive_x, receive_y, receive_z1, receive_z2);
