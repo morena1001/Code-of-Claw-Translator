@@ -22,6 +22,7 @@
 #include "stm32f3xx_it.h"
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include "stdio.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -31,7 +32,10 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-
+#define BASE_ADDR		0x25
+#define ADDR			BASE_ADDR << 1
+#define W_ADDR			0x4A
+#define R_ADDR			0x4B
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -41,7 +45,9 @@
 
 /* Private variables ---------------------------------------------------------*/
 /* USER CODE BEGIN PV */
-
+char message[50];
+uint8_t cmd = 0x14;
+//uint8_t data = 0x01;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -57,7 +63,8 @@
 /* External variables --------------------------------------------------------*/
 
 /* USER CODE BEGIN EV */
-
+extern I2C_HandleTypeDef hi2c1;
+extern UART_HandleTypeDef huart2;
 /* USER CODE END EV */
 
 /******************************************************************************/
@@ -197,6 +204,27 @@ void SysTick_Handler(void)
 /* For the available peripheral interrupt handler names,                      */
 /* please refer to the startup file (startup_stm32f3xx.s).                    */
 /******************************************************************************/
+
+/**
+  * @brief This function handles EXTI line1 interrupt.
+  */
+void EXTI1_IRQHandler(void)
+{
+  /* USER CODE BEGIN EXTI1_IRQn 0 */
+	uint8_t data = 0x00;
+	HAL_StatusTypeDef status = HAL_I2C_Master_Transmit (&hi2c1, W_ADDR, &cmd, 1, HAL_MAX_DELAY);
+	status = HAL_I2C_Master_Receive (&hi2c1, R_ADDR, &data, 1, HAL_MAX_DELAY);
+
+	if (data != 0x00) {
+		sprintf (message, "%.2X\r\n", data);
+		HAL_UART_Transmit (&huart2, (uint8_t*) message, 50, HAL_MAX_DELAY);
+	}
+  /* USER CODE END EXTI1_IRQn 0 */
+  HAL_GPIO_EXTI_IRQHandler(INT_Pin);
+  /* USER CODE BEGIN EXTI1_IRQn 1 */
+
+  /* USER CODE END EXTI1_IRQn 1 */
+}
 
 /* USER CODE BEGIN 1 */
 
