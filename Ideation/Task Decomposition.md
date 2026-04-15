@@ -1,9 +1,9 @@
 ### SIMULATION AND EXPERIMENTATION
-- [ ] Design a system for the 3 inputs
-    - [ ] Design a touch analyzer with a trackpad
-        - [ ] Accept input as a touch if there is a beginning and an end, and if there is a miniscule amount of movement from the touch’s origin
-    - [ ] Design a scratch (slide) analyzer with a trackpad
-        - [ ] Upgrade system to accept an input as a slide if there is a large amount of movement
+- [x] Design a system for the 3 inputs
+    - [x] Design a touch analyzer with a trackpad
+        - [x] Accept input as a touch if there is a beginning and an end, and if there is a miniscule amount of movement from the touch’s origin
+    - [x] Design a scratch (slide) analyzer with a trackpad
+        - [x] Upgrade system to accept an input as a slide if there is a large amount of movement
     - [x] Design a click analyzer with a (amplitude measuring) microphone
         - [x] Design and demo an amplitude measuring system
             - [x] Accept an input if there is a sudden increase in amplitude from the baseline with an immediate decay (0.5 ms) and only lasts at most 2 ms before returning to the baseline threshold
