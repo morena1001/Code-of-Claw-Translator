@@ -142,9 +142,27 @@ int main(void)
   }
 
   {
+	  uint8_t cmd[2] = { 0x27, 0x042 };
+	  HAL_StatusTypeDef status = HAL_I2C_Master_Receive (&hi2c1, W_ADDR, cmd, 2, HAL_MAX_DELAY);
+	  if (status != HAL_OK)		return 0;
+  }
+
+  {
+	  uint8_t cmd[2] = { 0x28, 0x01 };
+	  HAL_StatusTypeDef status = HAL_I2C_Master_Receive (&hi2c1, W_ADDR, cmd, 2, HAL_MAX_DELAY);
+	  if (status != HAL_OK)		return 0;
+  }
+
+  {
 	  uint8_t cmd[2] = { 0x40, 0x01 };
 	  HAL_StatusTypeDef status = HAL_I2C_Master_Receive (&hi2c1, W_ADDR, cmd, 2, HAL_MAX_DELAY);
 	  if (status != HAL_OK)		return 0;
+  }
+
+  {
+  	  uint8_t cmd[2] = { 0x04, 0x20 };
+  	  HAL_StatusTypeDef status = HAL_I2C_Master_Receive (&hi2c1, W_ADDR, cmd, 2, HAL_MAX_DELAY);
+  	  if (status != HAL_OK)		return 0;
   }
 
   sprintf (msg, "HEY 3\r\n");
