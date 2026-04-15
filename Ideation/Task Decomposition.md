@@ -7,8 +7,8 @@
     - [x] Design a click analyzer with a (amplitude measuring) microphone
         - [x] Design and demo an amplitude measuring system
             - [x] Accept an input if there is a sudden increase in amplitude from the baseline with an immediate decay (0.5 ms) and only lasts at most 2 ms before returning to the baseline threshold
-- [ ] Design a system for the output
-    - [ ] Screen could emulate the LCD screens with green screen and pixelated characters
+- [x] Design a system for the output
+    - [x] Screen could emulate the LCD screens with green screen and pixelated characters
 - [ ] Add support buttons 
     - [ ] Add substitution buttons for each input
         - [ ] Tap button
