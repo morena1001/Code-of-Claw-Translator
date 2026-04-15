@@ -21,7 +21,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "stdio.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -48,7 +48,7 @@ I2C_HandleTypeDef hi2c1;
 UART_HandleTypeDef huart2;
 
 /* USER CODE BEGIN PV */
-
+char msg[50];
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -97,6 +97,9 @@ int main(void)
   MX_I2C1_Init();
   MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
+  sprintf (msg, "\r\nHEY 0\r\n");
+  HAL_UART_Transmit (&huart2, (uint8_t*) msg, 50, HAL_MAX_DELAY);
+
   // check that communication works
   {
 	  uint8_t cmd = 0x43;
@@ -106,12 +109,46 @@ int main(void)
 	  if (status != HAL_OK && data != BASE_ADDR) 	return 0;
   }
 
+  sprintf (msg, "HEY 1\r\n");
+  HAL_UART_Transmit (&huart2, (uint8_t*) msg, 50, HAL_MAX_DELAY);
+
+  // Set up gesture mode
   {
 	  uint8_t cmd[2] = { 0x05, 0x01 };
+	  HAL_StatusTypeDef status = HAL_I2C_Master_Transmit (&hi2c1, W_ADDR, cmd, 2, HAL_MAX_DELAY);
+	  if (status != HAL_OK)		return 0;
+  }
+
+  sprintf (msg, "HEY 2\r\n");
+  HAL_UART_Transmit (&huart2, (uint8_t*) msg, 50, HAL_MAX_DELAY);
+
+  // Set up idle period of 0x08
+  {
+	  uint8_t cmd[2] = { 0x29, 0x08 };
 	  HAL_StatusTypeDef status = HAL_I2C_Master_Receive (&hi2c1, W_ADDR, cmd, 2, HAL_MAX_DELAY);
 	  if (status != HAL_OK)		return 0;
   }
 
+  {
+	  uint8_t cmd[2] = { 0x25, 0x042 };
+	  HAL_StatusTypeDef status = HAL_I2C_Master_Receive (&hi2c1, W_ADDR, cmd, 2, HAL_MAX_DELAY);
+	  if (status != HAL_OK)		return 0;
+  }
+
+  {
+	  uint8_t cmd[2] = { 0x26, 0x01 };
+	  HAL_StatusTypeDef status = HAL_I2C_Master_Receive (&hi2c1, W_ADDR, cmd, 2, HAL_MAX_DELAY);
+	  if (status != HAL_OK)		return 0;
+  }
+
+  {
+	  uint8_t cmd[2] = { 0x40, 0x01 };
+	  HAL_StatusTypeDef status = HAL_I2C_Master_Receive (&hi2c1, W_ADDR, cmd, 2, HAL_MAX_DELAY);
+	  if (status != HAL_OK)		return 0;
+  }
+
+  sprintf (msg, "HEY 3\r\n");
+  HAL_UART_Transmit (&huart2, (uint8_t*) msg, 50, HAL_MAX_DELAY);
 
   /* USER CODE END 2 */
 
