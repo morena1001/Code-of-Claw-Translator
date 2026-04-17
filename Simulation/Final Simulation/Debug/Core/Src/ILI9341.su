@@ -1,0 +1,17 @@
+../Core/Src/ILI9341.c:18:19:ILI9341_Init	80	static
+../Core/Src/ILI9341.c:96:19:ILI9341_Reset	32	static
+../Core/Src/ILI9341.c:121:19:ILI9341_Set_Window_Location	40	static
+../Core/Src/ILI9341.c:150:19:ILI9341_Set_Window_Location_Size	40	static
+../Core/Src/ILI9341.c:181:19:ILI9341_Write_Pixel	24	static
+../Core/Src/ILI9341.c:192:19:ILI9341_Write_Pixels	32	static
+../Core/Src/ILI9341.c:214:6:ILI9341_Change_Font_Size	16	static
+../Core/Src/ILI9341.c:218:19:ILI9341_Write_Character	288	static
+../Core/Src/ILI9341.c:263:19:ILI9341_Rewrite_Character	272	static
+../Core/Src/ILI9341.c:292:19:ILI9341_Delete_Character	32	static
+../Core/Src/ILI9341.c:314:19:ILI9341_Write_String	24	static
+../Core/Src/ILI9341.c:322:19:ILI9341_Fill_Screen	40	static
+../Core/Src/ILI9341.c:356:19:ILI9341_Update_Cursor	40	static
+../Core/Src/ILI9341.c:386:6:ILI9341_Increment_Char_Pos	32	static
+../Core/Src/ILI9341.c:403:19:ILI9341_Clear_Cursor	40	static
+../Core/Src/ILI9341.c:437:19:ILI9341_Transmit_Cmd	16	static
+../Core/Src/ILI9341.c:445:19:ILI9341_Transmit_Data	24	static

@@ -1,0 +1,6 @@
+../Core/Src/code_tree.c:15:12:Tree_Init	8	static
+../Core/Src/code_tree.c:22:6:Add_Letter	16	static
+../Core/Src/code_tree.c:26:6:Traverse_Tree	24	static
+../Core/Src/code_tree.c:46:12:Make_Trie_Node	24	static
+../Core/Src/code_tree.c:56:6:Free_Trie_Node	24	static
+../Core/Src/code_tree.c:67:12:Trie_Init	24	static
