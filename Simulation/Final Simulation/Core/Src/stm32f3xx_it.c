@@ -52,7 +52,7 @@ char cur_let[2];
 
 /* Private function prototypes -----------------------------------------------*/
 /* USER CODE BEGIN PFP */
-
+void Check_Trie_Root (char letter);
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -212,11 +212,136 @@ void TIM2_IRQHandler(void)
 {
   /* USER CODE BEGIN TIM2_IRQn 0 */
 	if (end_of_letter_counter == 1) {
-		Add_Letter (cur_let[0]);
-		cur_let[0] = '\0';
+		Add_Letter (*cur_let);
+		*cur_let = '\0';
 		end_of_letter_counter = 0;
 		travel = root;
 		ILI9341_Increment_Char_Pos (&ili9341);
+	}
+
+	if (!HAL_GPIO_ReadPin (CB_GPIO_Port, CB_Pin)) {
+		if (!toggle) {
+			toggle = true;
+
+			ILI9341_Clear_Screen(&ili9341);
+			*cur_let = '\0';
+			end_of_letter_counter = 0;
+			travel = root;
+		}
+	} else if (!HAL_GPIO_ReadPin (BB_GPIO_Port, BB_Pin)) {
+		if (!toggle) {
+			toggle = true;
+
+			ILI9341_Rewrite_Character (&ili9341, ' ');
+			*cur_let = '\0';
+			end_of_letter_counter = 0;
+			travel = root;
+			ILI9341_Delete_Character (&ili9341);
+		}
+	} else if (!HAL_GPIO_ReadPin (NC_GPIO_Port, NC_Pin)) {
+		if (!toggle) {
+			toggle = true;
+
+			*cur_let = '\0';
+			end_of_letter_counter = 0;
+			travel = root;
+			ILI9341_Increment_Char_Pos (&ili9341);
+		}
+	} else if (!HAL_GPIO_ReadPin (PB_GPIO_Port, PB_Pin)) {
+		if (!toggle) {
+			toggle = true;
+
+			*cur_let = '.';
+			ILI9341_Rewrite_Character (&ili9341, '.');
+			*cur_let = '\0';
+			end_of_letter_counter = 0;
+			travel = root;
+			ILI9341_Increment_Char_Pos (&ili9341);
+		}
+
+
+
+//	/*} else */if (!HAL_GPIO_ReadPin(SB_GPIO_Port, SB_Pin)) {
+//		if (!toggle) {
+//			toggle = true;
+//			if (current_letter[0] != '\0') {
+//
+//				Add_Letter(current_letter[0]);
+//				Add_Letter(' ');
+//
+//				current_letter[0] = '\0';
+//				end_of_letter_counter = 0;
+//				temporary_travel = root;
+//
+//				Move_Cursor(&row, &col);
+//				Move_Cursor(&row, &col);
+//			} else {
+//
+//				Add_Letter(' ');
+//
+//				end_of_letter_counter = 0;
+//				temporary_travel = root;
+//
+//				Move_Cursor(&row, &col);
+//			}
+//		}
+//	} else if (!HAL_GPIO_ReadPin(SMB_GPIO_Port, SMB_Pin)) {
+//		if (!toggle) {
+//			toggle = true;
+//
+//			Generate_Tone(SEND_PERIOD, SEND_COUNTER);
+//
+//			if (current_letter[0] != '\0') {
+//				Add_Letter(current_letter[0]);
+//				current_letter[0] = '\0';
+//			}
+//
+//			Add_Letter('\r');
+//			Add_Letter('\n');
+//
+//			HAL_UART_Transmit(&huart2, (uint8_t*) input_string, input_string_length, 100);
+//			end_of_letter_counter = 0;
+//			temporary_travel = root;
+//
+//			row = 0;
+//			col = 0;
+//			HD44780_Clear();
+//		}
+	} else if (!HAL_GPIO_ReadPin (CL_GPIO_Port, CL_Pin)) {
+		if (!toggle) {
+			toggle = true;
+
+			*cur_let = Traverse_Tree (&travel, '\\');
+			ILI9341_Rewrite_Character (&ili9341, *cur_let);
+			Check_Trie_Root('\\');
+
+			end_of_letter_counter = 251;
+		}
+	} else if (!HAL_GPIO_ReadPin (ST_GPIO_Port, ST_Pin)) {
+		if (!toggle) {
+			toggle = true;
+
+			*cur_let = Traverse_Tree (&travel, '|');
+			ILI9341_Rewrite_Character (&ili9341, *cur_let);
+			Check_Trie_Root('|');
+
+			end_of_letter_counter = 251;
+		}
+	} else if (!HAL_GPIO_ReadPin (TP_GPIO_Port, TP_Pin)) {
+		if (!toggle) {
+			toggle = true;
+
+			*cur_let = Traverse_Tree (&travel, '/');
+			ILI9341_Rewrite_Character (&ili9341, *cur_let);
+			Check_Trie_Root('/');
+
+			end_of_letter_counter = 251;
+		}
+	} else {
+		toggle = false;
+		if (end_of_letter_counter > 0) {
+			end_of_letter_counter--;
+		}
 	}
   /* USER CODE END TIM2_IRQn 0 */
   HAL_TIM_IRQHandler(&htim2);
@@ -226,5 +351,11 @@ void TIM2_IRQHandler(void)
 }
 
 /* USER CODE BEGIN 1 */
-
+void Check_Trie_Root (char letter) {
+	if (travel->data == '-') {
+		ILI9341_Increment_Char_Pos (&ili9341);
+		*cur_let = Traverse_Tree (&travel, letter);
+		ILI9341_Rewrite_Character (&ili9341, *cur_let);
+	}
+}
 /* USER CODE END 1 */

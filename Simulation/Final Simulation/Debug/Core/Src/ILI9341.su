@@ -13,5 +13,6 @@
 ../Core/Src/ILI9341.c:356:19:ILI9341_Update_Cursor	40	static
 ../Core/Src/ILI9341.c:386:6:ILI9341_Increment_Char_Pos	32	static
 ../Core/Src/ILI9341.c:403:19:ILI9341_Clear_Cursor	40	static
-../Core/Src/ILI9341.c:437:19:ILI9341_Transmit_Cmd	16	static
-../Core/Src/ILI9341.c:445:19:ILI9341_Transmit_Data	24	static
+../Core/Src/ILI9341.c:433:19:ILI9341_Clear_Screen	32	static
+../Core/Src/ILI9341.c:456:19:ILI9341_Transmit_Cmd	16	static
+../Core/Src/ILI9341.c:464:19:ILI9341_Transmit_Data	24	static

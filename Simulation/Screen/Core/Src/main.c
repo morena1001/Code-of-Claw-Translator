@@ -47,7 +47,7 @@ SPI_HandleTypeDef hspi2;
 UART_HandleTypeDef huart2;
 
 /* USER CODE BEGIN PV */
-ILI9341_t ili9341;
+s
 char message[50];
 /* USER CODE END PV */
 
@@ -100,11 +100,14 @@ int main(void)
   sprintf (message, "WHY\r\n");
   HAL_UART_Transmit (&huart2, (uint8_t *) message, 50, 100);
   ILI9341_Init(&ili9341, &hspi2, CS_GPIO_Port, CS_Pin, RS_GPIO_Port, RS_Pin, DC_GPIO_Port, DC_Pin);
-
+  sprintf (message, "2\r\n");
+    HAL_UART_Transmit (&huart2, (uint8_t *) message, 50, 100);
 
 //  ILI9341_Set_Window_Location (&ili9341, 0x001, 0x0001 + (ROW_SIZE * ili9341.char_size) - 1, 0x0001, 0x0001 + (COL_SIZE * ili9341.char_size) - 1);
 //  ILI9341_Fill_Screen (&ili9341, COLOR_WHITE);
   ILI9341_Write_String(&ili9341, "Hello");
+  sprintf (message, "WHY\r\n");
+  HAL_UART_Transmit (&huart2, (uint8_t *) message, 50, 100);
   HAL_Delay (500);
   ILI9341_Delete_Character (&ili9341);
   HAL_Delay (500);

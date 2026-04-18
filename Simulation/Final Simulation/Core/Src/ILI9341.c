@@ -77,7 +77,7 @@ HAL_StatusTypeDef ILI9341_Init (ILI9341_t* device, SPI_HandleTypeDef* spi_handle
     HAL_GPIO_WritePin (device->cs_port, device->cs_pin, GPIO_PIN_SET);
 
     // Set bg to background color
-    ILI9341_Fill_Screen(device, device->bg_color);
+//    ILI9341_Fill_Screen(device, device->bg_color);
 
     // Set window location for the cursor to print characters
     ILI9341_Set_Window_Location (device, 0x0001, 0x0001 + (ROW_SIZE * DEF_CHAR_SIZE) - 1, 0x000B, 0x000B + (COL_SIZE * DEF_CHAR_SIZE) - 1);
@@ -246,7 +246,7 @@ HAL_StatusTypeDef ILI9341_Write_Character (ILI9341_t* device, char letter) {
 	// Update character position
 	if (device->x_pos == CHAR_ROW_LENGTH - 1) {
 		device->x_pos = 0;
-		if (device->y_pos == CHAR_COL_LENGTH)	device->y_pos = 0;
+		if (device->y_pos == CHAR_COL_LENGTH - 1)	device->y_pos = 0;
 		else	device->y_pos++;
 	} else		device->x_pos++;
 	ILI9341_Increment_Char_Pos (device);
@@ -284,7 +284,7 @@ HAL_StatusTypeDef ILI9341_Rewrite_Character (ILI9341_t* device, char letter) {
 	free (colors);
 
 	// Change character in the array at the same position
-	device->characters[device->y_pos][device->x_pos] = ' ';
+	device->characters[device->y_pos][device->x_pos] = letter;
 
 	return HAL_OK;
 }
@@ -389,7 +389,7 @@ void ILI9341_Increment_Char_Pos (ILI9341_t* device) {
 	// Update character position
 	if (device->x_pos == CHAR_ROW_LENGTH - 1) {
 		device->x_pos = 0;
-		if (device->y_pos == CHAR_COL_LENGTH)	device->y_pos = 0;
+		if (device->y_pos == CHAR_COL_LENGTH - 1)	device->y_pos = 0;
 		else	device->y_pos++;
 	} else		device->x_pos++;
 
@@ -428,6 +428,25 @@ HAL_StatusTypeDef ILI9341_Clear_Cursor (ILI9341_t* device) {
 	ILI9341_Set_Window_Location (device, device->win_s_x, device->win_e_x, device->win_s_y, device->win_e_y);
 
 	return HAL_OK;
+}
+
+HAL_StatusTypeDef ILI9341_Clear_Screen (ILI9341_t* device) {
+	ILI9341_Fill_Screen (device, device->bg_color);
+
+    // Set window location for the cursor to print characters
+    ILI9341_Set_Window_Location (device, 0x0001, 0x0001 + (ROW_SIZE * DEF_CHAR_SIZE) - 1, 0x000B, 0x000B + (COL_SIZE * DEF_CHAR_SIZE) - 1);
+
+    // Set cursor position to zero
+    device->x_pos = 0;
+    device->y_pos = 0;
+
+    //
+    for (uint8_t i = 0; i < CHAR_COL_LENGTH; i++)		memset (device->characters[i], ' ', sizeof (char) * CHAR_ROW_LENGTH);
+
+    // Set cursor
+    ILI9341_Update_Cursor (device);
+
+    return HAL_OK;
 }
 
 /*

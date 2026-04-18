@@ -97,10 +97,12 @@ int main(void)
   MX_TIM2_Init();
   /* USER CODE BEGIN 2 */
   ILI9341_Init (&ili9341, &hspi2, CS_GPIO_Port, CS_Pin, RS_GPIO_Port, RS_Pin, DC_GPIO_Port, DC_Pin);
+  travel = Tree_Init ();
 
   HAL_NVIC_SetPriority (TIM2_IRQn, 0, 0);
   HAL_NVIC_EnableIRQ (TIM2_IRQn);
   HAL_TIM_Base_Start_IT (&htim2);
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -171,17 +173,17 @@ static void MX_SPI2_Init(void)
   hspi2.Instance = SPI2;
   hspi2.Init.Mode = SPI_MODE_MASTER;
   hspi2.Init.Direction = SPI_DIRECTION_2LINES;
-  hspi2.Init.DataSize = SPI_DATASIZE_4BIT;
+  hspi2.Init.DataSize = SPI_DATASIZE_8BIT;
   hspi2.Init.CLKPolarity = SPI_POLARITY_LOW;
   hspi2.Init.CLKPhase = SPI_PHASE_1EDGE;
   hspi2.Init.NSS = SPI_NSS_SOFT;
-  hspi2.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_2;
+  hspi2.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_8;
   hspi2.Init.FirstBit = SPI_FIRSTBIT_MSB;
   hspi2.Init.TIMode = SPI_TIMODE_DISABLE;
   hspi2.Init.CRCCalculation = SPI_CRCCALCULATION_DISABLE;
   hspi2.Init.CRCPolynomial = 7;
   hspi2.Init.CRCLength = SPI_CRC_LENGTH_DATASIZE;
-  hspi2.Init.NSSPMode = SPI_NSS_PULSE_ENABLE;
+  hspi2.Init.NSSPMode = SPI_NSS_PULSE_DISABLE;
   if (HAL_SPI_Init(&hspi2) != HAL_OK)
   {
     Error_Handler();
@@ -262,23 +264,17 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : SB_Pin PB_Pin CC_Pin */
-  GPIO_InitStruct.Pin = SB_Pin|PB_Pin|CC_Pin;
+  /*Configure GPIO pins : PB_Pin NC_Pin BB_Pin CB_Pin */
+  GPIO_InitStruct.Pin = PB_Pin|NC_Pin|BB_Pin|CB_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
-  GPIO_InitStruct.Pull = GPIO_PULLDOWN;
+  GPIO_InitStruct.Pull = GPIO_PULLUP;
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
   /*Configure GPIO pins : CL_Pin TP_Pin ST_Pin */
   GPIO_InitStruct.Pin = CL_Pin|TP_Pin|ST_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
-  GPIO_InitStruct.Pull = GPIO_PULLDOWN;
+  GPIO_InitStruct.Pull = GPIO_PULLUP;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
-
-  /*Configure GPIO pins : BB_Pin CB_Pin */
-  GPIO_InitStruct.Pin = BB_Pin|CB_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
 /* USER CODE BEGIN MX_GPIO_Init_2 */
 /* USER CODE END MX_GPIO_Init_2 */

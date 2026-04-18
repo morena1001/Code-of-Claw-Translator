@@ -125,6 +125,7 @@ HAL_StatusTypeDef ILI9341_Fill_Screen (ILI9341_t* device, uint32_t color_value);
 HAL_StatusTypeDef ILI9341_Update_Cursor (ILI9341_t* device);
 void ILI9341_Increment_Char_Pos (ILI9341_t* device);
 HAL_StatusTypeDef ILI9341_Clear_Cursor (ILI9341_t* device);
+HAL_StatusTypeDef ILI9341_Clear_Screen (ILI9341_t* device);
 
 /*
  * LOW-LEVEL FUNCTIONS
