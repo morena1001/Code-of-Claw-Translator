@@ -10,17 +10,16 @@
 - [x] Design a system for the output
     - [x] Screen could emulate the LCD screens with green screen and pixelated characters
 - [ ] Add support buttons 
-    - [ ] Add substitution buttons for each input
-        - [ ] Tap button
-        - [ ] Scratch button
-        - [ ] Click button
-    - [ ] Add space and period buttons for the output screen
-        - [ ] Space button
-        - [ ] Period button
-    - [ ] Add a character confirm and a backspace button
-        - [ ] Character confirm button
-        - [ ] Backspace button
-    - [ ] Add a clear screen button
+    - [x] Add substitution buttons for each input
+        - [x] Tap button
+        - [x] Scratch button
+        - [x] Click button
+    - [ ] Add period button for the output screen
+        - [x] Period button
+    - [x] Add a character confirm and a backspace button
+        - [x] Character confirm button
+        - [x] Backspace button
+    - [x] Add a clear screen button
     - [ ] Add an ambient amplitude button to determine baseline and threshold
     - [ ] Add a knob to increase and decrease microphone sensitivity for click recognition
 
