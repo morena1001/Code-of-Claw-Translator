@@ -24,7 +24,7 @@
 /* USER CODE BEGIN Includes */
 #include "ILI9341.h"
 #include "code_tree.h"
-#include "stdbool.h"
+#include "MTCH6102.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -65,6 +65,7 @@ extern TIM_HandleTypeDef htim2;
 /* USER CODE BEGIN EV */
 extern ILI9341_t ili9341;
 extern trie_node* travel;
+extern mtch6102_t mtch6102;
 /* USER CODE END EV */
 
 /******************************************************************************/
@@ -206,6 +207,23 @@ void SysTick_Handler(void)
 /******************************************************************************/
 
 /**
+  * @brief This function handles EXTI line1 interrupt.
+  */
+void EXTI1_IRQHandler(void)
+{
+  /* USER CODE BEGIN EXTI1_IRQn 0 */
+//	MTCH6102_REG_GESTURESTATE
+	MTCH6102_Receive (&mtch6102, MTCH6102_REG_GESTURESTATE, &(mtch6102.gesture), 1);
+	mtch6102.tap = IS_TAP (mtch6102.gesture);
+	mtch6102.scratch = IS_SCRATCH (mtch6102.gesture);
+  /* USER CODE END EXTI1_IRQn 0 */
+  HAL_GPIO_EXTI_IRQHandler(INT_Pin);
+  /* USER CODE BEGIN EXTI1_IRQn 1 */
+
+  /* USER CODE END EXTI1_IRQn 1 */
+}
+
+/**
   * @brief This function handles TIM2 global interrupt.
   */
 void TIM2_IRQHandler(void)
@@ -258,55 +276,6 @@ void TIM2_IRQHandler(void)
 			travel = root;
 			ILI9341_Increment_Char_Pos (&ili9341);
 		}
-
-
-
-//	/*} else */if (!HAL_GPIO_ReadPin(SB_GPIO_Port, SB_Pin)) {
-//		if (!toggle) {
-//			toggle = true;
-//			if (current_letter[0] != '\0') {
-//
-//				Add_Letter(current_letter[0]);
-//				Add_Letter(' ');
-//
-//				current_letter[0] = '\0';
-//				end_of_letter_counter = 0;
-//				temporary_travel = root;
-//
-//				Move_Cursor(&row, &col);
-//				Move_Cursor(&row, &col);
-//			} else {
-//
-//				Add_Letter(' ');
-//
-//				end_of_letter_counter = 0;
-//				temporary_travel = root;
-//
-//				Move_Cursor(&row, &col);
-//			}
-//		}
-//	} else if (!HAL_GPIO_ReadPin(SMB_GPIO_Port, SMB_Pin)) {
-//		if (!toggle) {
-//			toggle = true;
-//
-//			Generate_Tone(SEND_PERIOD, SEND_COUNTER);
-//
-//			if (current_letter[0] != '\0') {
-//				Add_Letter(current_letter[0]);
-//				current_letter[0] = '\0';
-//			}
-//
-//			Add_Letter('\r');
-//			Add_Letter('\n');
-//
-//			HAL_UART_Transmit(&huart2, (uint8_t*) input_string, input_string_length, 100);
-//			end_of_letter_counter = 0;
-//			temporary_travel = root;
-//
-//			row = 0;
-//			col = 0;
-//			HD44780_Clear();
-//		}
 	} else if (!HAL_GPIO_ReadPin (CL_GPIO_Port, CL_Pin)) {
 		if (!toggle) {
 			toggle = true;
@@ -317,7 +286,7 @@ void TIM2_IRQHandler(void)
 
 			end_of_letter_counter = 251;
 		}
-	} else if (!HAL_GPIO_ReadPin (ST_GPIO_Port, ST_Pin)) {
+	} else if (!HAL_GPIO_ReadPin (ST_GPIO_Port, ST_Pin) || MTCH6102_Read_Scratch_Status (&mtch6102)) {
 		if (!toggle) {
 			toggle = true;
 
@@ -327,7 +296,7 @@ void TIM2_IRQHandler(void)
 
 			end_of_letter_counter = 251;
 		}
-	} else if (!HAL_GPIO_ReadPin (TP_GPIO_Port, TP_Pin)) {
+	} else if (!HAL_GPIO_ReadPin (TP_GPIO_Port, TP_Pin) || MTCH6102_Read_Tap_Status (&mtch6102)) {
 		if (!toggle) {
 			toggle = true;
 

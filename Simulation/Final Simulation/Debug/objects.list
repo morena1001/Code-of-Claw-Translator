@@ -1,4 +1,5 @@
 "./Core/Src/ILI9341.o"
+"./Core/Src/MTCH6102.o"
 "./Core/Src/code_tree.o"
 "./Core/Src/main.o"
 "./Core/Src/stm32f3xx_hal_msp.o"
