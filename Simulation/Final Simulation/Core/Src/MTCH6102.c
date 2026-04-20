@@ -133,10 +133,6 @@ void MTCH6102_Update_Reset_Pin (mtch6102_t* device, GPIO_TypeDef* new_port, uint
 }
 
 /*
- * LOW LEVEL FUNCTIONS
- */
-
-/*
  * @brief	Transmits data to the IC via I2C as per page 8 of the datasheet
  * @param	device		A user declared instance of the mtch6102 struct
  * @param	reg			The address of the reg to change

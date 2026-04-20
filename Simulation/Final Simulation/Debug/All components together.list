@@ -27,25 +27,25 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   ALLOC
  11 .ARM.attributes 00000030  00000000  00000000  0000805c  2**0
                   CONTENTS, READONLY
- 12 .debug_info   00010e36  00000000  00000000  0000808c  2**0
+ 12 .debug_info   00010eaf  00000000  00000000  0000808c  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 13 .debug_abbrev 0000265a  00000000  00000000  00018ec2  2**0
+ 13 .debug_abbrev 0000268a  00000000  00000000  00018f3b  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 14 .debug_aranges 00000fe8  00000000  00000000  0001b520  2**3
+ 14 .debug_aranges 00000ff0  00000000  00000000  0001b5c8  2**3
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 15 .debug_rnglists 00000c65  00000000  00000000  0001c508  2**0
+ 15 .debug_rnglists 00000c6b  00000000  00000000  0001c5b8  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 16 .debug_macro  0001ccf5  00000000  00000000  0001d16d  2**0
+ 16 .debug_macro  0001ccf5  00000000  00000000  0001d223  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 17 .debug_line   00015097  00000000  00000000  00039e62  2**0
+ 17 .debug_line   000150b2  00000000  00000000  00039f18  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 18 .debug_str    000a6c32  00000000  00000000  0004eef9  2**0
+ 18 .debug_str    000a6c48  00000000  00000000  0004efca  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 19 .comment      00000043  00000000  00000000  000f5b2b  2**0
+ 19 .comment      00000043  00000000  00000000  000f5c12  2**0
                   CONTENTS, READONLY
- 20 .debug_frame  0000485c  00000000  00000000  000f5b70  2**2
+ 20 .debug_frame  00004880  00000000  00000000  000f5c58  2**2
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 21 .debug_line_str 00000071  00000000  00000000  000fa3cc  2**0
+ 21 .debug_line_str 00000071  00000000  00000000  000fa4d8  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
 
 Disassembly of section .text:
@@ -2898,11 +2898,11 @@ HAL_StatusTypeDef ILI9341_Transmit_Data (ILI9341_t* device, uint8_t* data, uint8
  800193e:	bd80      	pop	{r7, pc}
 
 08001940 <MTCH6102_Init>:
-
-/*
- * INITILIZATION FUNCTION
+ * 							breakout board
+ * @param	rst_pin		The GPIO pin of the reset pin present on the mikroe touchpad click
+ * 							breakout board
+ * @retval 	HAL status
  */
-
 HAL_StatusTypeDef MTCH6102_Init (mtch6102_t* device, I2C_HandleTypeDef* i2c_handle, GPIO_TypeDef* rst_port, uint16_t rst_pin) {
  8001940:	b580      	push	{r7, lr}
  8001942:	b086      	sub	sp, #24
@@ -3078,11 +3078,11 @@ HAL_StatusTypeDef MTCH6102_Init (mtch6102_t* device, I2C_HandleTypeDef* i2c_hand
  8001a56:	bd80      	pop	{r7, pc}
 
 08001a58 <MTCH6102_Read_Tap_Status>:
+ * @brief	Provides a volatile, single use read of the tap register on the struct by
+ * 				clearing it afterward
+ * @param	device		A user declared instance of the mtch6102 struct
+ * @retval 	value of tap register on struct
  */
-HAL_StatusTypeDef MTCH6102_Confirm_Config (mtch6102_t* device) {
-	return MTCH6102_Transmit (device, MTCH6102_REG_CMD, MTCH6102_CMD_CFG);
-}
-
 bool MTCH6102_Read_Tap_Status (mtch6102_t* device) {
  8001a58:	b480      	push	{r7}
  8001a5a:	b085      	sub	sp, #20
@@ -3106,7 +3106,11 @@ bool MTCH6102_Read_Tap_Status (mtch6102_t* device) {
  8001a78:	4770      	bx	lr
 
 08001a7a <MTCH6102_Read_Scratch_Status>:
-
+ * @brief	Provides a volatile, single use read of the scratch register on the struct by
+ * 				clearing it afterward
+ * @param	device		A user declared instance of the mtch6102 struct
+ * @retval 	value of scratch register on struct
+ */
 bool MTCH6102_Read_Scratch_Status (mtch6102_t* device) {
  8001a7a:	b480      	push	{r7}
  8001a7c:	b085      	sub	sp, #20
@@ -3130,11 +3134,11 @@ bool MTCH6102_Read_Scratch_Status (mtch6102_t* device) {
  8001a9a:	4770      	bx	lr
 
 08001a9c <MTCH6102_Transmit>:
-
-/*
- * LOW LEVEL FUNCTIONS
+ * @param	device		A user declared instance of the mtch6102 struct
+ * @param	reg			The address of the reg to change
+ * @param	data		The new value to be stored in the register
+ * @retval 	HAL status
  */
-
 HAL_StatusTypeDef MTCH6102_Transmit (mtch6102_t* device, uint8_t reg, uint8_t data) {
  8001a9c:	b580      	push	{r7, lr}
  8001a9e:	b086      	sub	sp, #24
@@ -3166,7 +3170,11 @@ HAL_StatusTypeDef MTCH6102_Transmit (mtch6102_t* device, uint8_t reg, uint8_t da
  8001ad2:	bd80      	pop	{r7, pc}
 
 08001ad4 <MTCH6102_Receive>:
-
+ * @param	reg			The address of the register to receive data from
+ * @param	data_buffer	The location in STM32 memory to store the incoming data
+ * @param	buffer_size	The size of the buffer, or the size of the data to be received from
+ * @retval 	HAL status
+ */
 HAL_StatusTypeDef MTCH6102_Receive (mtch6102_t* device, uint8_t reg, uint8_t* data_buffer, uint8_t buffer_size) {
  8001ad4:	b580      	push	{r7, lr}
  8001ad6:	b088      	sub	sp, #32
