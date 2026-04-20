@@ -96,7 +96,7 @@ typedef struct {
  * INITILIZATION FUNCTION
  */
 
-HAL_StatusTypeDef MTCH6102_Init (mtch6102_t* device, I2C_HandleTypeDef* i2c_handle);
+HAL_StatusTypeDef MTCH6102_Init (mtch6102_t* device, I2C_HandleTypeDef* i2c_handle, GPIO_TypeDef* rst_port, uint16_t rst_pin);
 
 /*
  * HELPER FUNCTIONS
@@ -107,6 +107,8 @@ bool MTCH6102_Read_Tap_Status (mtch6102_t* device);
 bool MTCH6102_Read_Scratch_Status (mtch6102_t* device);
 void MTCH6102_Clear_Tap_Status (mtch6102_t* device);
 void MTCH6102_Clear_Scratch_Status (mtch6102_t* device);
+void MTCH6102_Reset_Device (mtch6102_t* device);
+void MTCH6102_Update_Reset_Pin (mtch6102_t* device, GPIO_TypeDef* new_port, uint16_t new_pin);
 
 /*
  * LOW LEVEL FUNCTIONS

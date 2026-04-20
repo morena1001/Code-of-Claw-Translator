@@ -104,7 +104,7 @@ int main(void)
   /* USER CODE BEGIN 2 */
   ILI9341_Init (&ili9341, &hspi2, CS_GPIO_Port, CS_Pin, RS_GPIO_Port, RS_Pin, DC_GPIO_Port, DC_Pin);
   travel = Tree_Init ();
-  MTCH6102_Init (&mtch6102, &hi2c1, RST_GPIO_Port, RST_Pin);
+  MTCH6102_Init (&mtch6102, &hi2c1);
 
   HAL_NVIC_SetPriority (TIM2_IRQn, 0, 0);
   HAL_NVIC_EnableIRQ (TIM2_IRQn);
@@ -317,14 +317,7 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOB_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOA, RST_Pin|CS_Pin|RS_Pin|DC_Pin, GPIO_PIN_RESET);
-
-  /*Configure GPIO pin : RST_Pin */
-  GPIO_InitStruct.Pin = RST_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-  GPIO_InitStruct.Pull = GPIO_PULLUP;
-  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(RST_GPIO_Port, &GPIO_InitStruct);
+  HAL_GPIO_WritePin(GPIOA, CS_Pin|RS_Pin|DC_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin : INT_Pin */
   GPIO_InitStruct.Pin = INT_Pin;

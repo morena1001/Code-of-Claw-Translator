@@ -18,8 +18,10 @@
  * 							breakout board
  * @retval 	HAL status
  */
-HAL_StatusTypeDef MTCH6102_Init (mtch6102_t* device, I2C_HandleTypeDef* i2c_handle) {
+HAL_StatusTypeDef MTCH6102_Init (mtch6102_t* device, I2C_HandleTypeDef* i2c_handle, GPIO_TypeDef* rst_port, uint16_t rst_pin) {
 	device->i2c_handle = i2c_handle;
+	device->rst_port = rst_port;
+	device->rst_pin = rst_pin;
 	device-> gesture = NO_GESTURE;
 	device->tap = false;
 	device->scratch = false;
@@ -107,6 +109,27 @@ void MTCH6102_Clear_Tap_Status (mtch6102_t* device) {
  */
 void MTCH6102_Clear_Scratch_Status (mtch6102_t* device) {
 	device->scratch = false;
+}
+
+/*
+ * @brief	Performs a hardware reset using the reset pin on the breakout board
+ * @param	device		A user declared instance of the mtch6102 struct
+ */
+void MTCH6102_Reset_Device (mtch6102_t* device) {
+	HAL_GPIO_WritePin (device->rst_port, device->rst_pin, GPIO_PIN_RESET);
+	HAL_Delay (100);
+	HAL_GPIO_WritePin (device->rst_port, device->rst_pin, GPIO_PIN_SET);
+}
+
+/*
+ * @brief	Updates the STM32 pin used for the reset pin on the breakout board
+ * @param	device		A user declared instance of the mtch6102 struct
+ * @param	new_port	The new GPIO port for the reset pin
+ * @param	new_pin		The new GPIO pin for the reset pin
+ */
+void MTCH6102_Update_Reset_Pin (mtch6102_t* device, GPIO_TypeDef* new_port, uint16_t new_pin) {
+	device->rst_port = new_port;
+	device->rst_pin = new_pin;
 }
 
 /*
