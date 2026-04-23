@@ -25,6 +25,7 @@
 #include "ILI9341.h"
 #include "code_tree.h"
 #include "MTCH6102.h"
+#include "envelope.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -61,11 +62,16 @@ void Check_Trie_Root (char letter);
 /* USER CODE END 0 */
 
 /* External variables --------------------------------------------------------*/
+extern DMA_HandleTypeDef hdma_adc1;
 extern TIM_HandleTypeDef htim2;
+extern TIM_HandleTypeDef htim6;
 /* USER CODE BEGIN EV */
 extern ILI9341_t ili9341;
 extern trie_node* travel;
 extern mtch6102_t mtch6102;
+extern envelope_t env;
+
+extern ADC_HandleTypeDef hadc1;
 /* USER CODE END EV */
 
 /******************************************************************************/
@@ -224,6 +230,20 @@ void EXTI1_IRQHandler(void)
 }
 
 /**
+  * @brief This function handles DMA1 channel1 global interrupt.
+  */
+void DMA1_Channel1_IRQHandler(void)
+{
+  /* USER CODE BEGIN DMA1_Channel1_IRQn 0 */
+
+  /* USER CODE END DMA1_Channel1_IRQn 0 */
+  HAL_DMA_IRQHandler(&hdma_adc1);
+  /* USER CODE BEGIN DMA1_Channel1_IRQn 1 */
+
+  /* USER CODE END DMA1_Channel1_IRQn 1 */
+}
+
+/**
   * @brief This function handles TIM2 global interrupt.
   */
 void TIM2_IRQHandler(void)
@@ -276,7 +296,7 @@ void TIM2_IRQHandler(void)
 			travel = root;
 			ILI9341_Increment_Char_Pos (&ili9341);
 		}
-	} else if (!HAL_GPIO_ReadPin (CL_GPIO_Port, CL_Pin)) {
+	} else if (!HAL_GPIO_ReadPin (CL_GPIO_Port, CL_Pin) || Envelope_Read_Click_Status (&env)) {
 		if (!toggle) {
 			toggle = true;
 
@@ -319,12 +339,56 @@ void TIM2_IRQHandler(void)
   /* USER CODE END TIM2_IRQn 1 */
 }
 
+/**
+  * @brief This function handles TIM6 global interrupt, DAC interrupts.
+  */
+void TIM6_DAC_IRQHandler(void)
+{
+  /* USER CODE BEGIN TIM6_DAC_IRQn 0 */
+	if ((env.is_loud_input && env.current_sample > env.loud_sample_size) ||
+	   (!env.is_loud_input && env.current_sample > env.quiet_sample_size)) {
+		env.click = true;
+		env.click_checking = false;
+		HAL_TIM_Base_Stop_IT (&htim6);
+	}
+
+	if ((env.is_loud_input &&
+			(double) abs (*(env.input.raw_buffer)) > LOUD_FUNC (env.current_sample)) ||
+	   (!env.is_loud_input &&
+			(double) abs (*(env.input.raw_buffer)) > QUIET_FUNC (env.current_sample))) {
+		env.click_checking = false;
+		HAL_TIM_Base_Stop_IT (&htim6);
+	} else {
+		(env.current_sample)++;
+	}
+  /* USER CODE END TIM6_DAC_IRQn 0 */
+  HAL_TIM_IRQHandler(&htim6);
+  /* USER CODE BEGIN TIM6_DAC_IRQn 1 */
+
+  /* USER CODE END TIM6_DAC_IRQn 1 */
+}
+
 /* USER CODE BEGIN 1 */
 void Check_Trie_Root (char letter) {
 	if (travel->data == '-') {
 		ILI9341_Increment_Char_Pos (&ili9341);
 		*cur_let = Traverse_Tree (&travel, letter);
 		ILI9341_Rewrite_Character (&ili9341, *cur_let);
+	}
+}
+
+void HAL_ADC_ConvCpltCallback (ADC_HandleTypeDef *hadc) {
+	env.input.procsd_val= abs (*(env.input.raw_buffer) - env.baseline);
+	HAL_ADC_Start_DMA (&hadc1, (uint32_t *) env.input.raw_buffer, env.input.buffer_size);
+
+	if (env.input.procsd_val > env.threshold && !env.click_checking) {
+		if (env.input.procsd_val > 1097) 	env.is_loud_input = true; // WHAT DOES THE 1907 MEAN ?!?!?!?!?!?!
+		else 				env.is_loud_input = false;
+
+		env.current_sample = 0;
+		env.click_checking = true;
+
+		HAL_TIM_Base_Start_IT (&htim6);
 	}
 }
 /* USER CODE END 1 */

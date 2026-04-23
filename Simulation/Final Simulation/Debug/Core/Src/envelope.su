@@ -1,0 +1,3 @@
+../Core/Src/envelope.c:18:6:Envelope_Init	24	static
+../Core/Src/envelope.c:45:6:Envelope_Read_Click_Status	24	static
+../Core/Src/envelope.c:55:6:Envelope_Clear_Click_Status	16	static

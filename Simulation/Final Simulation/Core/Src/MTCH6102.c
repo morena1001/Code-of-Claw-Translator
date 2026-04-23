@@ -12,10 +12,6 @@
  * 				Set up IC using I2C communication
  * @param	device		A user declared instance of the mtch6102 struct
  * @param	i2c_handle	The I2C handle used to communicate with the IC
- * @param	rst_port	The GPIO port of the reset pin present on the mikroe touchpad click
- * 							breakout board
- * @param	rst_pin		The GPIO pin of the reset pin present on the mikroe touchpad click
- * 							breakout board
  * @retval 	HAL status
  */
 HAL_StatusTypeDef MTCH6102_Init (mtch6102_t* device, I2C_HandleTypeDef* i2c_handle) {

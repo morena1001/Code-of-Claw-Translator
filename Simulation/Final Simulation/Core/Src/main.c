@@ -24,6 +24,7 @@
 #include "ILI9341.h"
 #include "code_tree.h"
 #include "MTCH6102.h"
+#include "envelope.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -42,31 +43,73 @@
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
+ADC_HandleTypeDef hadc1;
+DMA_HandleTypeDef hdma_adc1;
+
 I2C_HandleTypeDef hi2c1;
 
 SPI_HandleTypeDef hspi2;
 
 TIM_HandleTypeDef htim2;
+TIM_HandleTypeDef htim6;
 
 /* USER CODE BEGIN PV */
 ILI9341_t ili9341;
 trie_node* travel;
 mtch6102_t mtch6102;
+envelope_t env;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
+static void MX_DMA_Init(void);
 static void MX_SPI2_Init(void);
 static void MX_TIM2_Init(void);
 static void MX_I2C1_Init(void);
+static void MX_ADC1_Init(void);
+static void MX_TIM6_Init(void);
 /* USER CODE BEGIN PFP */
 
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+//void HAL_ADC_ConvCpltCallback (ADC_HandleTypeDef *hadc) {
+//	env.input.procsd_val= abs (*(env.input.raw_buffer) - env.baseline);
+//	HAL_ADC_Start_DMA (&hadc1, (uint32_t *) env.input.raw_buffer, env.input.buffer_size);
+//
+//	if (env.input.procsd_val > env.threshold && !env.click_checking) {
+//		if (env.input.procsd_val > 1097) 	env.is_loud_input = true; // WHAT DOES THE 1907 MEAN ?!?!?!?!?!?!
+//		else 				env.is_loud_input = false;
+//
+//		env.current_sample = 0;
+//		env.click_checking = true;
+//
+//		HAL_TIM_Base_Start_IT (&htim6);
+//	}
+//}
 
+//void HAL_TIM_PeriodElapsedCallback (TIM_HandleTypeDef *htim) {
+//	if (htim->Instance == TIM6) {
+//		if ((env.is_loud_input && env.current_sample > env.loud_sample_size) ||
+//		   (!env.is_loud_input && env.current_sample > env.quiet_sample_size)) {
+//			env.click = true;
+//			env.click_checking = false;
+//			HAL_TIM_Base_Stop_IT (&htim6);
+//		}
+//
+//		if ((env.is_loud_input &&
+//				(double) abs (*(env.input.raw_buffer)) > LOUD_FUNC (env.current_sample)) ||
+//		   (!env.is_loud_input &&
+//				(double) abs (*(env.input.raw_buffer)) > QUIET_FUNC (env.current_sample))) {
+//			env.click_checking = false;
+//			HAL_TIM_Base_Stop_IT (&htim6);
+//		} else {
+//			(env.current_sample)++;
+//		}
+//	}
+//}
 /* USER CODE END 0 */
 
 /**
@@ -98,17 +141,27 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
+  MX_DMA_Init();
   MX_SPI2_Init();
   MX_TIM2_Init();
   MX_I2C1_Init();
+  MX_ADC1_Init();
+  MX_TIM6_Init();
   /* USER CODE BEGIN 2 */
   ILI9341_Init (&ili9341, &hspi2, CS_GPIO_Port, CS_Pin, RS_GPIO_Port, RS_Pin, DC_GPIO_Port, DC_Pin);
   travel = Tree_Init ();
   MTCH6102_Init (&mtch6102, &hi2c1);
+  Envelope_Init (&env, &hadc1, &hdma_adc1);
 
   HAL_NVIC_SetPriority (TIM2_IRQn, 0, 0);
   HAL_NVIC_EnableIRQ (TIM2_IRQn);
   HAL_TIM_Base_Start_IT (&htim2);
+
+  HAL_NVIC_SetPriority (TIM6_DAC_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ (TIM6_DAC_IRQn);
+//  HAL_TIM_Base_Start_IT (&htim6);
+
+  HAL_ADC_Start_DMA (&hadc1, (uint32_t*) env.input.raw_buffer, env.input.buffer_size);
 
   /* USER CODE END 2 */
 
@@ -138,9 +191,12 @@ void SystemClock_Config(void)
   */
   RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSI|RCC_OSCILLATORTYPE_HSE;
   RCC_OscInitStruct.HSEState = RCC_HSE_ON;
+  RCC_OscInitStruct.HSEPredivValue = RCC_HSE_PREDIV_DIV1;
   RCC_OscInitStruct.HSIState = RCC_HSI_ON;
   RCC_OscInitStruct.HSICalibrationValue = RCC_HSICALIBRATION_DEFAULT;
-  RCC_OscInitStruct.PLL.PLLState = RCC_PLL_NONE;
+  RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
+  RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSE;
+  RCC_OscInitStruct.PLL.PLLMUL = RCC_PLL_MUL2;
   if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
   {
     Error_Handler();
@@ -159,12 +215,71 @@ void SystemClock_Config(void)
   {
     Error_Handler();
   }
-  PeriphClkInit.PeriphClockSelection = RCC_PERIPHCLK_I2C1;
+  PeriphClkInit.PeriphClockSelection = RCC_PERIPHCLK_I2C1|RCC_PERIPHCLK_ADC1;
   PeriphClkInit.I2c1ClockSelection = RCC_I2C1CLKSOURCE_HSI;
+  PeriphClkInit.Adc1ClockSelection = RCC_ADC1PLLCLK_DIV1;
+
   if (HAL_RCCEx_PeriphCLKConfig(&PeriphClkInit) != HAL_OK)
   {
     Error_Handler();
   }
+}
+
+/**
+  * @brief ADC1 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_ADC1_Init(void)
+{
+
+  /* USER CODE BEGIN ADC1_Init 0 */
+
+  /* USER CODE END ADC1_Init 0 */
+
+  ADC_ChannelConfTypeDef sConfig = {0};
+
+  /* USER CODE BEGIN ADC1_Init 1 */
+
+  /* USER CODE END ADC1_Init 1 */
+
+  /** Common config
+  */
+  hadc1.Instance = ADC1;
+  hadc1.Init.ClockPrescaler = ADC_CLOCK_ASYNC_DIV1;
+  hadc1.Init.Resolution = ADC_RESOLUTION_12B;
+  hadc1.Init.ScanConvMode = ADC_SCAN_DISABLE;
+  hadc1.Init.ContinuousConvMode = ENABLE;
+  hadc1.Init.DiscontinuousConvMode = DISABLE;
+  hadc1.Init.ExternalTrigConvEdge = ADC_EXTERNALTRIGCONVEDGE_NONE;
+  hadc1.Init.ExternalTrigConv = ADC_SOFTWARE_START;
+  hadc1.Init.DataAlign = ADC_DATAALIGN_RIGHT;
+  hadc1.Init.NbrOfConversion = 1;
+  hadc1.Init.DMAContinuousRequests = DISABLE;
+  hadc1.Init.EOCSelection = ADC_EOC_SINGLE_CONV;
+  hadc1.Init.LowPowerAutoWait = DISABLE;
+  hadc1.Init.Overrun = ADC_OVR_DATA_OVERWRITTEN;
+  if (HAL_ADC_Init(&hadc1) != HAL_OK)
+  {
+    Error_Handler();
+  }
+
+  /** Configure Regular Channel
+  */
+  sConfig.Channel = ADC_CHANNEL_1;
+  sConfig.Rank = ADC_REGULAR_RANK_1;
+  sConfig.SingleDiff = ADC_SINGLE_ENDED;
+  sConfig.SamplingTime = ADC_SAMPLETIME_1CYCLE_5;
+  sConfig.OffsetNumber = ADC_OFFSET_NONE;
+  sConfig.Offset = 0;
+  if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN ADC1_Init 2 */
+
+  /* USER CODE END ADC1_Init 2 */
+
 }
 
 /**
@@ -297,6 +412,60 @@ static void MX_TIM2_Init(void)
   /* USER CODE BEGIN TIM2_Init 2 */
 
   /* USER CODE END TIM2_Init 2 */
+
+}
+
+/**
+  * @brief TIM6 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_TIM6_Init(void)
+{
+
+  /* USER CODE BEGIN TIM6_Init 0 */
+
+  /* USER CODE END TIM6_Init 0 */
+
+  TIM_MasterConfigTypeDef sMasterConfig = {0};
+
+  /* USER CODE BEGIN TIM6_Init 1 */
+
+  /* USER CODE END TIM6_Init 1 */
+  htim6.Instance = TIM6;
+  htim6.Init.Prescaler = 31;
+  htim6.Init.CounterMode = TIM_COUNTERMODE_UP;
+  htim6.Init.Period = 24;
+  htim6.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
+  if (HAL_TIM_Base_Init(&htim6) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
+  sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
+  if (HAL_TIMEx_MasterConfigSynchronization(&htim6, &sMasterConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN TIM6_Init 2 */
+
+  /* USER CODE END TIM6_Init 2 */
+
+}
+
+/**
+  * Enable DMA controller clock
+  */
+static void MX_DMA_Init(void)
+{
+
+  /* DMA controller clock enable */
+  __HAL_RCC_DMA1_CLK_ENABLE();
+
+  /* DMA interrupt init */
+  /* DMA1_Channel1_IRQn interrupt configuration */
+  HAL_NVIC_SetPriority(DMA1_Channel1_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(DMA1_Channel1_IRQn);
 
 }
 
