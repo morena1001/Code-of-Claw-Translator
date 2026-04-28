@@ -47,8 +47,8 @@ SPI_HandleTypeDef hspi2;
 UART_HandleTypeDef huart2;
 
 /* USER CODE BEGIN PV */
-s
 char message[50];
+ILI9341_t ili9341;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -97,27 +97,21 @@ int main(void)
   MX_USART2_UART_Init();
   MX_SPI2_Init();
   /* USER CODE BEGIN 2 */
-  sprintf (message, "WHY\r\n");
-  HAL_UART_Transmit (&huart2, (uint8_t *) message, 50, 100);
-  ILI9341_Init(&ili9341, &hspi2, CS_GPIO_Port, CS_Pin, RS_GPIO_Port, RS_Pin, DC_GPIO_Port, DC_Pin);
-  sprintf (message, "2\r\n");
-    HAL_UART_Transmit (&huart2, (uint8_t *) message, 50, 100);
+  ILI9341_Init (&ili9341, &hspi2, CS_GPIO_Port, CS_Pin, RS_GPIO_Port, RS_Pin, DC_GPIO_Port, DC_Pin);
 
-//  ILI9341_Set_Window_Location (&ili9341, 0x001, 0x0001 + (ROW_SIZE * ili9341.char_size) - 1, 0x0001, 0x0001 + (COL_SIZE * ili9341.char_size) - 1);
-//  ILI9341_Fill_Screen (&ili9341, COLOR_WHITE);
-  ILI9341_Write_String(&ili9341, "Hello");
-  sprintf (message, "WHY\r\n");
-  HAL_UART_Transmit (&huart2, (uint8_t *) message, 50, 100);
-  HAL_Delay (500);
-  ILI9341_Delete_Character (&ili9341);
-  HAL_Delay (500);
-  ILI9341_Rewrite_Character (&ili9341, 'W');
-  HAL_Delay (500);
-//  ILI9341_Write_Character(&ili9341, 'H');
-//  ILI9341_Write_Character(&ili9341, 'E');
-//  ILI9341_Write_Character(&ili9341, 'l');
-//  ILI9341_Write_Character(&ili9341, 'l');
-  ILI9341_Write_Character(&ili9341, 'o');
+  HAL_Delay (1000);
+//  ILI9341_Set_Window_Location (&ili9341, 0x00A0, 0x00A9, 0x00A0, 0x00AF);
+//  uint32_t values[] = { 0x0000FC, 0x00FC00, 0x00FC00, 0x00FC00,
+//  		  	  	  	  0x00FC00, 0x00FC00, 0x00FC00, 0x0000FC };
+//  ILI9341_Write_Pixel (&ili9341, COLOR_RED);
+
+  ILI9341_Write_String(&ili9341, "Hello world");
+//  HAL_Delay (500);
+//  ILI9341_Delete_Character (&ili9341);
+//  HAL_Delay (500);
+//  ILI9341_Rewrite_Character (&ili9341, 'W');
+//  HAL_Delay (500);
+//  ILI9341_Write_Character(&ili9341, 'o');
 
 
   /* USER CODE END 2 */

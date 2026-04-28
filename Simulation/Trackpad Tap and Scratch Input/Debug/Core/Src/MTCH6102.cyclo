@@ -1,0 +1,8 @@
+../Core/Src/MTCH6102.c:17:19:MTCH6102_Init	10
+../Core/Src/MTCH6102.c:64:19:MTCH6102_Confirm_Config	1
+../Core/Src/MTCH6102.c:74:6:MTCH6102_Read_Tap_Status	1
+../Core/Src/MTCH6102.c:86:6:MTCH6102_Read_Scratch_Status	1
+../Core/Src/MTCH6102.c:96:6:MTCH6102_Clear_Tap_Status	1
+../Core/Src/MTCH6102.c:104:6:MTCH6102_Clear_Scratch_Status	1
+../Core/Src/MTCH6102.c:115:19:MTCH6102_Transmit	1
+../Core/Src/MTCH6102.c:128:19:MTCH6102_Receive	1

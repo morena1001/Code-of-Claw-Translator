@@ -83,7 +83,7 @@ HAL_StatusTypeDef ILI9341_Init (ILI9341_t* device, SPI_HandleTypeDef* spi_handle
     ILI9341_Set_Window_Location (device, 0x0001, 0x0001 + (ROW_SIZE * DEF_CHAR_SIZE) - 1, 0x000B, 0x000B + (COL_SIZE * DEF_CHAR_SIZE) - 1);
 
     // Set cursor
-    ILI9341_Update_Cursor (device);
+//    ILI9341_Update_Cursor (device);
 
 //	return status;
 	return HAL_OK;

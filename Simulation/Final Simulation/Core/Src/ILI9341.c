@@ -77,7 +77,7 @@ HAL_StatusTypeDef ILI9341_Init (ILI9341_t* device, SPI_HandleTypeDef* spi_handle
     HAL_GPIO_WritePin (device->cs_port, device->cs_pin, GPIO_PIN_SET);
 
     // Set bg to background color
-//    ILI9341_Fill_Screen(device, device->bg_color);
+    ILI9341_Fill_Screen(device, device->bg_color);
 
     // Set window location for the cursor to print characters
     ILI9341_Set_Window_Location (device, 0x0001, 0x0001 + (ROW_SIZE * DEF_CHAR_SIZE) - 1, 0x000B, 0x000B + (COL_SIZE * DEF_CHAR_SIZE) - 1);
