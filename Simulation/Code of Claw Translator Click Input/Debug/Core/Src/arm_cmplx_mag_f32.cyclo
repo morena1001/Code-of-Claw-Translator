@@ -1,0 +1,2 @@
+../Core/Inc/arm_math.h:5735:30:arm_sqrt_f32.isra	2
+../Core/Src/arm_cmplx_mag_f32.c:84:6:arm_cmplx_mag_f32	3

@@ -22,8 +22,7 @@
 #include "stm32f3xx_it.h"
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include "envelope.h"
-#include "stdlib.h"
+
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -43,7 +42,7 @@
 
 /* Private variables ---------------------------------------------------------*/
 /* USER CODE BEGIN PV */
-char m[10];
+
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -57,12 +56,9 @@ char m[10];
 /* USER CODE END 0 */
 
 /* External variables --------------------------------------------------------*/
-extern DMA_HandleTypeDef hdma_adc1;
-extern TIM_HandleTypeDef htim2;
-extern UART_HandleTypeDef huart2;
+extern DMA_HandleTypeDef hdma_spi2_rx;
 /* USER CODE BEGIN EV */
-extern ADC_HandleTypeDef hadc1;
-extern envelope_t env;
+
 /* USER CODE END EV */
 
 /******************************************************************************/
@@ -204,64 +200,17 @@ void SysTick_Handler(void)
 /******************************************************************************/
 
 /**
-  * @brief This function handles DMA1 channel1 global interrupt.
+  * @brief This function handles DMA1 channel4 global interrupt.
   */
-void DMA1_Channel1_IRQHandler(void)
+void DMA1_Channel4_IRQHandler(void)
 {
-  /* USER CODE BEGIN DMA1_Channel1_IRQn 0 */
-	env.input.procsd_val = abs (*(env.input.raw_buffer) - env.baseline);
-	HAL_ADC_Start_DMA (&hadc1, (uint32_t *) (env.input.raw_buffer), env.input.buffer_size);
+  /* USER CODE BEGIN DMA1_Channel4_IRQn 0 */
 
-	if (!env.click_checking && env.input.procsd_val >= env.threshold) {
-		Envelope_Set_Sample_Size (&env);
-		env.current_sample = 0;
-		env.click_checking = true;
-		env.failed = false;
+  /* USER CODE END DMA1_Channel4_IRQn 0 */
+  HAL_DMA_IRQHandler(&hdma_spi2_rx);
+  /* USER CODE BEGIN DMA1_Channel4_IRQn 1 */
 
-		HAL_TIM_Base_Start_IT (&htim2);
-	}
-  /* USER CODE END DMA1_Channel1_IRQn 0 */
-  HAL_DMA_IRQHandler(&hdma_adc1);
-  /* USER CODE BEGIN DMA1_Channel1_IRQn 1 */
-
-  /* USER CODE END DMA1_Channel1_IRQn 1 */
-}
-
-/**
-  * @brief This function handles TIM2 global interrupt.
-  */
-void TIM2_IRQHandler(void)
-{
-  /* USER CODE BEGIN TIM2_IRQn 0 */
-  	if (!env.failed) {
-		if (env.input.procsd_val <= env.equilibrium || env.current_sample >= env.sample_size) {
-			env.current_sample = 0;
-			env.click_checking = false;
-			env.failed = false;
-			env.click = true;
-			HAL_TIM_Base_Stop_IT (&htim2);
-			return;
-		}
-
-		if (Envelope_Formula_Check (&env) == FAILED) {
-			env.failed = true;
-			env.failure = env.current_sample;
-			env.click = false;
-		}
-  	}
-  	(env.current_sample)++;
-
-  	if (env.current_sample >= env.sample_size) {
-  		env.current_sample = 0;
-  		env.click_checking = false;
-  		env.failed = false;
-  		HAL_TIM_Base_Stop_IT (&htim2);
-  	}
-  /* USER CODE END TIM2_IRQn 0 */
-  HAL_TIM_IRQHandler(&htim2);
-  /* USER CODE BEGIN TIM2_IRQn 1 */
-
-  /* USER CODE END TIM2_IRQn 1 */
+  /* USER CODE END DMA1_Channel4_IRQn 1 */
 }
 
 /* USER CODE BEGIN 1 */

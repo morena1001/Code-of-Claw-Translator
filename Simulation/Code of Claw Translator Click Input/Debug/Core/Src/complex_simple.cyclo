@@ -1,0 +1,5 @@
+../Core/Src/complex_simple.c:11:9:complex_from_polar	1
+../Core/Src/complex_simple.c:18:8:complex_magnitude	1
+../Core/Src/complex_simple.c:22:9:complex_add	1
+../Core/Src/complex_simple.c:29:9:complex_sub	1
+../Core/Src/complex_simple.c:36:9:complex_mult	1

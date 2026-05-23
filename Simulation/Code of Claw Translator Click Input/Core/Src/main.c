@@ -21,9 +21,9 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include "arm_math.h"
 #include "stdio.h"
-
-#include "envelope.h"
+#include "stdlib.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -33,7 +33,14 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
+//#define BUFFER_SIZE 256
+//#define INT16_TO_FLOAT 	1.0f / 32768.0f
+//#define INT32_TO_FLOAT 	1.0f / 2147483648.0f
 
+//#define FFT_LENGTH	1024
+//#define SAMPLE_RATE	31250.0f
+#define FFT_LENGTH 		256
+#define SAMPLING_RATE	16000.0
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -42,73 +49,75 @@
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
-ADC_HandleTypeDef hadc1;
-DMA_HandleTypeDef hdma_adc1;
-
-TIM_HandleTypeDef htim2;
+I2S_HandleTypeDef hi2s2;
+DMA_HandleTypeDef hdma_spi2_rx;
 
 UART_HandleTypeDef huart2;
 
 /* USER CODE BEGIN PV */
-envelope_t env;
+//int16_t audio_data[BUFFER_SIZE];
+//volatile int16_t sample_i2s;
+//volatile int16_t* in_buf_ptr;
+//
+//uint8_t data_ready_flag;
+
+arm_rfft_fast_instance_f32 fft_inst;
+float32_t frequency = 500.0;
+
+char msg[50];
+
+float32_t input_fft[FFT_LENGTH];
+float32_t output_fft[FFT_LENGTH];
+float32_t output_fft_mag[FFT_LENGTH / 2];
+
+//float peak_val = 0.0f;
+//float peak_Hz = 0;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_DMA_Init(void);
-static void MX_ADC1_Init(void);
+static void MX_I2S2_Init(void);
 static void MX_USART2_UART_Init(void);
-static void MX_TIM2_Init(void);
 /* USER CODE BEGIN PFP */
 
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-//void HAL_ADC_ConvCpltCallback (ADC_HandleTypeDef *hadc) {
-//	val = abs (*val_buffer - baseline);
-//	HAL_ADC_Start_DMA (&hadc1, (uint32_t *) val_buffer, 1);
-//
-//	if (val > threshold && !checking) {
-//		if (val > 1097) 	is_loud_sound = true;
-//		else 				is_loud_sound = false;
-//
-//		current_sample = 0;
-//		checking = true;
-//
-//		HAL_TIM_Base_Start_IT (&htim2);
-//	}
+//void HAL_I2S_RxHalfCpltCallback (I2S_HandleTypeDef* hi2s) {
+//	in_buf_ptr = &(audio_data[0]);
+//	data_ready_flag = 1;
+//}
+
+//void HAL_I2S_RxCpltCallback (I2S_HandleTypeDef* hi2s) {
+////	in_buf_ptr = &(audio_data[BUFFER_SIZE / 2]);
+//	in_buf_ptr = &(audio_data[0]);
+////	sample_i2s = audio_data[0];
+//	data_ready_flag = 1;
 //}
 //
-//void HAL_TIM_PeriodElapsedCallback (TIM_HandleTypeDef *htim) {
-//	if (is_loud_sound && current_sample >/*=*/ loud_sample_size) {
-//		sprintf (message, "YES  LOUD\r\n");
-//		HAL_UART_Transmit (&huart2, (uint8_t *) message, 100, HAL_MAX_DELAY);
-//		checking = false;
-//		HAL_TIM_Base_Stop_IT (&htim2);
-//	} else if (!is_loud_sound && current_sample >/*=*/ quiet_sample_size) {
-//		sprintf (message, "YES QUIET\r\n");
-//		HAL_UART_Transmit (&huart2, (uint8_t *) message, 100, HAL_MAX_DELAY);
-//		checking = false;
-//		HAL_TIM_Base_Stop_IT (&htim2);
+//void Process_Data () {
+//	static float left_in, right_in;
+//	static int16_t fft_idx = 0;
+//
+//	for (uint16_t n = 0; n < BUFFER_SIZE; n += 2) {
+//		left_in = (float) (in_buf_ptr[n] < 0 ? in_buf_ptr[n] + 1900 : in_buf_ptr[n] - 1900);
+////		left_in = INT16_TO_FLOAT * ((float) (in_buf_ptr[n] < 0 ? in_buf_ptr[n] + 1900 : in_buf_ptr[n] - 1900));
+//		right_in = INT16_TO_FLOAT * ((float) in_buf_ptr[n + 1]);
+//
+//		fft_buff_in[fft_idx] = left_in;
+//		fft_idx++;
+//
+//		if (fft_idx == FFT_BUFFER_SIZE) {
+//			arm_rfft_fast_f32 (&fft_handler, fft_buff_in, fft_buff_out, 1);
+//			fft_flag = 1;
+//			fft_idx = 0;
+//		}
 //	}
 //
-//	if (is_loud_sound &&
-//			(double) abs (*val_buffer) > LOUD_FUNC (current_sample)) {
-//		sprintf (message, "NO  LOUD, %d %f %f %d\r\n", current_sample, (double) abs (*val_buffer), LOUD_FUNC (current_sample), (double) abs (*val_buffer) > LOUD_FUNC (current_sample));
-//		HAL_UART_Transmit (&huart2, (uint8_t *) message, 100, HAL_MAX_DELAY);
-//		checking = false;
-//		HAL_TIM_Base_Stop_IT (&htim2);
-//	} else if (!is_loud_sound &&
-//			(double) abs (*val_buffer) > QUIET_FUNC (current_sample)) {
-//		sprintf (message, "NO QUIET, %d %f %f %d\r\n", current_sample, (double) abs (*val_buffer), QUIET_FUNC (current_sample), (double) abs (*val_buffer) > QUIET_FUNC (current_sample));
-//		HAL_UART_Transmit (&huart2, (uint8_t *) message, 100, HAL_MAX_DELAY);
-//		checking = false;
-//		HAL_TIM_Base_Stop_IT (&htim2);
-//	} else {
-//		current_sample++;
-//	}
+//	data_ready_flag = 0;
 //}
 /* USER CODE END 0 */
 
@@ -120,7 +129,7 @@ int main(void)
 {
 
   /* USER CODE BEGIN 1 */
-
+	arm_rfft_fast_init_f32 (&fft_inst, FFT_LENGTH);
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -142,28 +151,49 @@ int main(void)
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   MX_DMA_Init();
-  MX_ADC1_Init();
+  MX_I2S2_Init();
   MX_USART2_UART_Init();
-  MX_TIM2_Init();
   /* USER CODE BEGIN 2 */
-  Envelope_Init (&env, &hadc1, &hdma_adc1);
+//  HAL_I2S_Receive_DMA (&hi2s2, (uint16_t *) audio_data, BUFFER_SIZE);
+  HAL_Delay (100);
+    for (int i = 0; i < FFT_LENGTH; i++)
+  	  input_fft[i] = arm_sin_f32 (2.0 * PI * frequency * (float32_t) i / SAMPLING_RATE);
 
-  HAL_NVIC_SetPriority (TIM2_IRQn, 0, 0);
-  HAL_NVIC_EnableIRQ (TIM2_IRQn);
-//  HAL_TIM_Base_Start_IT (&htim2);
+    arm_rfft_fast_f32 (&fft_inst, input_fft, output_fft, 0);
+    arm_cmplx_mag_f32 (output_fft, output_fft_mag, FFT_LENGTH / 2);
 
-
-  HAL_ADC_Start_DMA (&hadc1, (uint32_t *) (env.input.raw_buffer), env.input.buffer_size);
+    for (int i = 0; i < FFT_LENGTH / 2; i++) {
+  	  sprintf (msg, "frequency %f: %f\r\n", ((float32_t)(i * SAMPLING_RATE) / FFT_LENGTH), output_fft_mag[i]);
+  	  HAL_UART_Transmit (&huart2, (uint8_t *) msg, 50, 100);
+    }
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
+
   while (1)
   {
+//	  if (data_ready_flag) {
+//		  Process_Data ();
+//	  }
+//
+//	  if (fft_flag) {
+//		  peak_val = 0.0f;
+//		  peak_Hz = 0;
+//
+//		  uint16_t freq_idx = 0;
+//		  for (uint16_t idx = 0; idx < FFT_BUFFER_SIZE; idx += 2) {
+//			  float cur_val = sqrtf ((fft_buff_out[idx] * fft_buff_out[idx]) + (fft_buff_out[idx + 1] * fft_buff_out[idx + 1]));
+//			  if (cur_val > peak_val) {
+//				  peak_Hz = ((float) (freq_idx * SAMPLE_RATE_HZ) / ((float) FFT_BUFFER_SIZE));
+//				  peak_val = cur_val;
+//			  }
+//		  }
+//
+//		  freq_idx++;
+//	  }
     /* USER CODE END WHILE */
-	  if (Envelope_Read_Click_Status (&env)) {
-		  Envelope_Clear_Click_Status (&env);
-	  }
+
     /* USER CODE BEGIN 3 */
   }
   /* USER CODE END 3 */
@@ -177,17 +207,14 @@ void SystemClock_Config(void)
 {
   RCC_OscInitTypeDef RCC_OscInitStruct = {0};
   RCC_ClkInitTypeDef RCC_ClkInitStruct = {0};
-  RCC_PeriphCLKInitTypeDef PeriphClkInit = {0};
 
   /** Initializes the RCC Oscillators according to the specified parameters
   * in the RCC_OscInitTypeDef structure.
   */
-  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSI;
+  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSE;
+  RCC_OscInitStruct.HSEState = RCC_HSE_ON;
   RCC_OscInitStruct.HSIState = RCC_HSI_ON;
-  RCC_OscInitStruct.HSICalibrationValue = RCC_HSICALIBRATION_DEFAULT;
-  RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
-  RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSI;
-  RCC_OscInitStruct.PLL.PLLMUL = RCC_PLL_MUL4;
+  RCC_OscInitStruct.PLL.PLLState = RCC_PLL_NONE;
   if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
   {
     Error_Handler();
@@ -197,7 +224,7 @@ void SystemClock_Config(void)
   */
   RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK|RCC_CLOCKTYPE_SYSCLK
                               |RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2;
-  RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_HSI;
+  RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_HSE;
   RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
   RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV1;
   RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV1;
@@ -206,114 +233,39 @@ void SystemClock_Config(void)
   {
     Error_Handler();
   }
-  PeriphClkInit.PeriphClockSelection = RCC_PERIPHCLK_ADC1;
-  PeriphClkInit.Adc1ClockSelection = RCC_ADC1PLLCLK_DIV1;
-
-  if (HAL_RCCEx_PeriphCLKConfig(&PeriphClkInit) != HAL_OK)
-  {
-    Error_Handler();
-  }
 }
 
 /**
-  * @brief ADC1 Initialization Function
+  * @brief I2S2 Initialization Function
   * @param None
   * @retval None
   */
-static void MX_ADC1_Init(void)
+static void MX_I2S2_Init(void)
 {
 
-  /* USER CODE BEGIN ADC1_Init 0 */
+  /* USER CODE BEGIN I2S2_Init 0 */
 
-  /* USER CODE END ADC1_Init 0 */
+  /* USER CODE END I2S2_Init 0 */
 
-  ADC_ChannelConfTypeDef sConfig = {0};
+  /* USER CODE BEGIN I2S2_Init 1 */
 
-  /* USER CODE BEGIN ADC1_Init 1 */
-
-  /* USER CODE END ADC1_Init 1 */
-
-  /** Common config
-  */
-  hadc1.Instance = ADC1;
-  hadc1.Init.ClockPrescaler = ADC_CLOCK_ASYNC_DIV1;
-  hadc1.Init.Resolution = ADC_RESOLUTION_12B;
-  hadc1.Init.ScanConvMode = ADC_SCAN_DISABLE;
-  hadc1.Init.ContinuousConvMode = ENABLE;
-  hadc1.Init.DiscontinuousConvMode = DISABLE;
-  hadc1.Init.ExternalTrigConvEdge = ADC_EXTERNALTRIGCONVEDGE_NONE;
-  hadc1.Init.ExternalTrigConv = ADC_SOFTWARE_START;
-  hadc1.Init.DataAlign = ADC_DATAALIGN_RIGHT;
-  hadc1.Init.NbrOfConversion = 1;
-  hadc1.Init.DMAContinuousRequests = DISABLE;
-  hadc1.Init.EOCSelection = ADC_EOC_SINGLE_CONV;
-  hadc1.Init.LowPowerAutoWait = DISABLE;
-  hadc1.Init.Overrun = ADC_OVR_DATA_OVERWRITTEN;
-  if (HAL_ADC_Init(&hadc1) != HAL_OK)
+  /* USER CODE END I2S2_Init 1 */
+  hi2s2.Instance = SPI2;
+  hi2s2.Init.Mode = I2S_MODE_MASTER_RX;
+  hi2s2.Init.Standard = I2S_STANDARD_PHILIPS;
+  hi2s2.Init.DataFormat = I2S_DATAFORMAT_16B_EXTENDED;
+  hi2s2.Init.MCLKOutput = I2S_MCLKOUTPUT_DISABLE;
+  hi2s2.Init.AudioFreq = I2S_AUDIOFREQ_32K;
+  hi2s2.Init.CPOL = I2S_CPOL_LOW;
+  hi2s2.Init.ClockSource = I2S_CLOCK_SYSCLK;
+  hi2s2.Init.FullDuplexMode = I2S_FULLDUPLEXMODE_DISABLE;
+  if (HAL_I2S_Init(&hi2s2) != HAL_OK)
   {
     Error_Handler();
   }
+  /* USER CODE BEGIN I2S2_Init 2 */
 
-  /** Configure Regular Channel
-  */
-  sConfig.Channel = ADC_CHANNEL_1;
-  sConfig.Rank = ADC_REGULAR_RANK_1;
-  sConfig.SingleDiff = ADC_SINGLE_ENDED;
-  sConfig.SamplingTime = ADC_SAMPLETIME_1CYCLE_5;
-  sConfig.OffsetNumber = ADC_OFFSET_NONE;
-  sConfig.Offset = 0;
-  if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  /* USER CODE BEGIN ADC1_Init 2 */
-
-  /* USER CODE END ADC1_Init 2 */
-
-}
-
-/**
-  * @brief TIM2 Initialization Function
-  * @param None
-  * @retval None
-  */
-static void MX_TIM2_Init(void)
-{
-
-  /* USER CODE BEGIN TIM2_Init 0 */
-
-  /* USER CODE END TIM2_Init 0 */
-
-  TIM_ClockConfigTypeDef sClockSourceConfig = {0};
-  TIM_MasterConfigTypeDef sMasterConfig = {0};
-
-  /* USER CODE BEGIN TIM2_Init 1 */
-
-  /* USER CODE END TIM2_Init 1 */
-  htim2.Instance = TIM2;
-  htim2.Init.Prescaler = 31;
-  htim2.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim2.Init.Period = 24;
-  htim2.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
-  htim2.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
-  if (HAL_TIM_Base_Init(&htim2) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  sClockSourceConfig.ClockSource = TIM_CLOCKSOURCE_INTERNAL;
-  if (HAL_TIM_ConfigClockSource(&htim2, &sClockSourceConfig) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
-  sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
-  if (HAL_TIMEx_MasterConfigSynchronization(&htim2, &sMasterConfig) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  /* USER CODE BEGIN TIM2_Init 2 */
-
-  /* USER CODE END TIM2_Init 2 */
+  /* USER CODE END I2S2_Init 2 */
 
 }
 
@@ -333,7 +285,7 @@ static void MX_USART2_UART_Init(void)
 
   /* USER CODE END USART2_Init 1 */
   huart2.Instance = USART2;
-  huart2.Init.BaudRate = 38400;
+  huart2.Init.BaudRate = 9600;
   huart2.Init.WordLength = UART_WORDLENGTH_8B;
   huart2.Init.StopBits = UART_STOPBITS_1;
   huart2.Init.Parity = UART_PARITY_NONE;
@@ -362,9 +314,9 @@ static void MX_DMA_Init(void)
   __HAL_RCC_DMA1_CLK_ENABLE();
 
   /* DMA interrupt init */
-  /* DMA1_Channel1_IRQn interrupt configuration */
-  HAL_NVIC_SetPriority(DMA1_Channel1_IRQn, 0, 0);
-  HAL_NVIC_EnableIRQ(DMA1_Channel1_IRQn);
+  /* DMA1_Channel4_IRQn interrupt configuration */
+  HAL_NVIC_SetPriority(DMA1_Channel4_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(DMA1_Channel4_IRQn);
 
 }
 
@@ -379,7 +331,9 @@ static void MX_GPIO_Init(void)
 /* USER CODE END MX_GPIO_Init_1 */
 
   /* GPIO Ports Clock Enable */
+  __HAL_RCC_GPIOF_CLK_ENABLE();
   __HAL_RCC_GPIOA_CLK_ENABLE();
+  __HAL_RCC_GPIOB_CLK_ENABLE();
 
 /* USER CODE BEGIN MX_GPIO_Init_2 */
 /* USER CODE END MX_GPIO_Init_2 */
