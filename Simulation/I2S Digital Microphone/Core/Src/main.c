@@ -38,6 +38,8 @@
 #define LEADING_ZEROS	14
 #define DC_OFFSET		255344 // 2^18 - 6800
 #define PEAK_AMP		262144 // 2^18
+#define COOLDOWN		40
+#define INIT_COOLDOWN	150
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -67,6 +69,11 @@ float peak_Hz;
 char msg[50];
 
 arm_rfft_fast_instance_f32 fft_inst;
+
+float threshold = 0.5f;
+uint16_t cooldown = INIT_COOLDOWN;
+uint8_t peaks[3] = { 0 };
+uint16_t recognized_count = 0;
 //float32_t frequency = 10000.0;
 /* USER CODE END PV */
 
@@ -116,6 +123,8 @@ void Process_Data () {
 	arm_cmplx_mag_f32 (output_fft, output_fft_mag, FFT_LENGTH / 2);
 	data_ready = 0;
 	mag_ready = 1;
+
+	if (cooldown != 0)	cooldown--;
 }
 
 /* USER CODE END 0 */
@@ -173,20 +182,47 @@ int main(void)
   {
 //	  printf ("Hello world\n");
 //	  HAL_Delay (1000);
+
 	  if (data_ready)		Process_Data ();
 
-	  if (mag_ready) {
-		  peak_val = 0.0f;
-		  peak_Hz = 0.0f;
+	  if (mag_ready && cooldown == 0) {
 
-		  for (uint16_t i = 0; i < FFT_LENGTH / 2; i++) {
-			  if (output_fft_mag[i] > peak_val) {
-				  peak_Hz = (i * SAMPLING_RATE) / FFT_LENGTH;
-				  peak_val = output_fft_mag[i];
-			  }
+		  for (uint8_t i = 4; i <= 9; i++)		if (output_fft_mag[i] >= threshold)		peaks[0] = 1;
+		  for (uint8_t i = 28; i <= 33; i++)	if (output_fft_mag[i] >= threshold)		peaks[1] = 1;
+		  for (uint8_t i = 57; i <= 82; i++)	if (output_fft_mag[i] >= threshold)		peaks[2] = 1;
+
+//		  for (uint16_t i = 0; i < FFT_LENGTH / 2; i++) {
+//			  if (i >= 4 && i <= 9 && output_fft_mag[i] >= threshold)			peaks[0] = 1;
+//			  else if (i >= 28 && i <= 33 && output_fft_mag[i] >= threshold)		peaks[0] = 1;
+//			  else if (i >= 57 && i <= 82 && output_fft_mag[i] >= threshold)		peaks[0] = 1;
+//			  else if (output_fft_mag[i] >= threshold) {
+//				  peaks[0] = 0;
+//				  peaks[1] = 0;
+//				  peaks[2] = 0;
+//				  break;
+//			  }
+//		  }
+
+		  if (peaks[0] & peaks[1] & peaks[2]) {
+			  recognized_count++;
+			  cooldown = COOLDOWN;
 		  }
+		  peaks[0] = 0;
+		  peaks[1] = 0;
+		  peaks[2] = 0;
 
-		  printf ("%.6f | %.6f\r\n", peak_Hz, peak_val);
+
+//		  peak_val = 0.0f;
+//		  peak_Hz = 0.0f;
+//
+//		  for (uint16_t i = 0; i < FFT_LENGTH / 2; i++) {
+//			  if (output_fft_mag[i] > peak_val) {
+//				  peak_Hz = (i * SAMPLING_RATE) / FFT_LENGTH;
+//				  peak_val = output_fft_mag[i];
+//			  }
+//		  }
+
+//		  printf ("%.6f | %.6f\r\n", peak_Hz, peak_val);
 //		  sprintf (msg, "%.6f | %.6f\r\n", peak_Hz, peak_val);
 //		  HAL_UART_Transmit (&huart2, (uint8_t *) msg, 50, 100);
 	  }
