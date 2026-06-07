@@ -40,6 +40,8 @@
 #define PEAK_AMP		262144 // 2^18
 #define COOLDOWN		40
 #define INIT_COOLDOWN	150
+#define MAX_LENGTH		30
+#define MAX_THRESHOLD	2.0f
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -74,6 +76,11 @@ float threshold = 0.5f;
 uint16_t cooldown = INIT_COOLDOWN;
 uint8_t peaks[3] = { 0 };
 uint16_t recognized_count = 0;
+
+uint16_t idx_found[3] = { 0 };
+uint16_t idx_found_2[3] = { 0 };
+uint8_t found = 0;
+uint8_t found_2 = 0;
 //float32_t frequency = 10000.0;
 /* USER CODE END PV */
 
@@ -125,6 +132,18 @@ void Process_Data () {
 	mag_ready = 1;
 
 	if (cooldown != 0)	cooldown--;
+	else {
+		found = 0;
+
+		idx_found[0] = 4;
+		idx_found[1] = 28;
+		idx_found[2] = 57;
+
+		idx_found_2[0] = 4;
+		idx_found_2[1] = 8;
+		idx_found_2[2] = 57;
+	}
+//	if (consecutive_count != MAX_LENGTH + 1) consecutive_count++;
 }
 
 /* USER CODE END 0 */
@@ -185,11 +204,42 @@ int main(void)
 
 	  if (data_ready)		Process_Data ();
 
-	  if (mag_ready && cooldown == 0) {
+//	  if (mag_ready && cooldown == 0) {
+	  if (mag_ready) {
+		  for (uint8_t i = 4; i <= 9; i++) {
+			  if (output_fft_mag[i] >= threshold) {
+				  peaks[0] = 1;
 
-		  for (uint8_t i = 4; i <= 9; i++)		if (output_fft_mag[i] >= threshold)		peaks[0] = 1;
-		  for (uint8_t i = 28; i <= 33; i++)	if (output_fft_mag[i] >= threshold)		peaks[1] = 1;
-		  for (uint8_t i = 57; i <= 82; i++)	if (output_fft_mag[i] >= threshold)		peaks[2] = 1;
+			  	  if (!found && output_fft_mag[i] > output_fft_mag[idx_found[0]])			idx_found[0] = i;
+				  else if (!found_2 && output_fft_mag[i] > output_fft_mag[idx_found_2[0]])	idx_found_2[0] = i;
+			  }
+		  }
+		  for (uint8_t i = 28; i <= 33; i++) {
+			  if (output_fft_mag[i] >= threshold) {
+				  peaks[1] = 1;
+
+			  	  if (!found)	idx_found[1] = i;
+			  	  else			idx_found_2[1] = i;
+			  }
+		  }
+		  for (uint8_t i = 57; i <= 82; i++) {
+			  if (output_fft_mag[i] >= threshold) {
+				  peaks[2] = 1;
+
+				  if (!found)	{
+					  idx_found[2] = i;
+					  found = 1;
+				  }
+				  else {
+					  idx_found_2[2] = i;
+					  found_2 = 1;
+				  }
+			  }
+		  }
+//		  for (uint8_t i = 0; i <= 3; i++)		if (output_fft_mag[i] >= MAX_THRESHOLD)		peaks[0] = 0;
+//		  for (uint8_t i = 10; i <= 27; i++)	if (output_fft_mag[i] >= MAX_THRESHOLD)		peaks[1] = 0;
+
+
 
 //		  for (uint16_t i = 0; i < FFT_LENGTH / 2; i++) {
 //			  if (i >= 4 && i <= 9 && output_fft_mag[i] >= threshold)			peaks[0] = 1;
@@ -203,13 +253,34 @@ int main(void)
 //			  }
 //		  }
 
+//		  if (peaks[0] & peaks[1] & peaks[2]) {
+//			  recognized_count++;
+//			  cooldown = COOLDOWN;
+//		  }
 		  if (peaks[0] & peaks[1] & peaks[2]) {
-			  recognized_count++;
-			  cooldown = COOLDOWN;
+			  if (cooldown == 0) {
+				  recognized_count++;
+				  cooldown = COOLDOWN;
+			  }
 		  }
+
+//		  if (peaks[0] & peaks[1] & peaks[2]) {
+//			  if (cooldown == 0) {
+//				  cooldown = COOLDOWN;
+//				  consecutive_count = 0;
+//			  }
+//		  }
+//
+//		 if (cooldown == 0 && consecutive_count <= MAX_LENGTH) {
+//			 recognized_count++;
+//			 consecutive_count = MAX_LENGTH + 1;
+//		 }
+
 		  peaks[0] = 0;
 		  peaks[1] = 0;
 		  peaks[2] = 0;
+
+		  mag_ready = 0;
 
 
 //		  peak_val = 0.0f;
