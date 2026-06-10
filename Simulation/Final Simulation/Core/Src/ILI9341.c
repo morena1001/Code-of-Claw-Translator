@@ -35,7 +35,10 @@ HAL_StatusTypeDef ILI9341_Init (ILI9341_t* device, SPI_HandleTypeDef* spi_handle
 	device->cursor_color = COLOR_BLUE;
 
 	device->characters = malloc (sizeof (char*) * CHAR_COL_LENGTH);
-	for (uint8_t i = 0; i < CHAR_COL_LENGTH; i++)		device->characters[i] = malloc (sizeof (char) * CHAR_ROW_LENGTH);
+	for (uint8_t i = 0; i < CHAR_COL_LENGTH; i++) {
+		device->characters[i] = malloc (sizeof (char) * CHAR_ROW_LENGTH);
+		for (uint8_t j = 0; j < CHAR_ROW_LENGTH; j++)	device->characters[i][j] = '\0';
+	}
 
 //	HAL_StatusTypeDef status = HAL_ERROR;
 
@@ -314,7 +317,7 @@ HAL_StatusTypeDef ILI9341_Delete_Character (ILI9341_t* device) {
 HAL_StatusTypeDef ILI9341_Write_String (ILI9341_t* device, char* string) {
 	uint8_t i = 0;
 	while (string[i] != '\0' && string[i] != '\n')
-		ILI9341_Write_Character(device, string[i++]);
+		ILI9341_Write_Character (device, string[i++]);
 
 	return HAL_OK;
 }
@@ -431,22 +434,65 @@ HAL_StatusTypeDef ILI9341_Clear_Cursor (ILI9341_t* device) {
 }
 
 HAL_StatusTypeDef ILI9341_Clear_Screen (ILI9341_t* device) {
-	ILI9341_Fill_Screen (device, device->bg_color);
+	// Clear the cursor
+	ILI9341_Clear_Cursor (device);
 
-    // Set window location for the cursor to print characters
-    ILI9341_Set_Window_Location (device, 0x0001, 0x0001 + (ROW_SIZE * DEF_CHAR_SIZE) - 1, 0x000B, 0x000B + (COL_SIZE * DEF_CHAR_SIZE) - 1);
+	// Clear every filled space
+	for (device->y_pos = 0; device->y_pos < CHAR_COL_LENGTH; device->y_pos++) {
+		for (device->x_pos = 0; device->x_pos < CHAR_ROW_LENGTH; device->x_pos++) {
+			if (device->characters[device->y_pos][device->x_pos] != '\0' && device->characters[device->y_pos][device->x_pos] != ' ') {
+				// Update window location
+				ILI9341_Set_Window_Location_Size (device, (device->x_pos * WINDOW_WIDTH) + X_LEFT_PADDING, (ROW_SIZE * device->char_size) - 1, (device->y_pos * WINDOW_HEIGHT) + Y_TOP_PADDING, (COL_SIZE * device->char_size) - 1);
 
-    // Set cursor position to zero
-    device->x_pos = 0;
-    device->y_pos = 0;
+				// Clear character
+				ILI9341_Rewrite_Character (device, ' ');
+			}
+		}
+	}
 
-    //
-    for (uint8_t i = 0; i < CHAR_COL_LENGTH; i++)		memset (device->characters[i], ' ', sizeof (char) * CHAR_ROW_LENGTH);
+//	for (uint8_t i = 0; i < CHAR_COL_LENGTH; i++) {
+//		for (uint8_t j = 0; j < CHAR_ROW_LENGTH; j++) {
+//			if (device->characters[i][j] != '\0' && device->characters[i][j] != ' ') {
 
-    // Set cursor
-    ILI9341_Update_Cursor (device);
+				// Update window location
+//				ILI9341_Set_Window_Location_Size (device, (i * WINDOW_WIDTH) + X_LEFT_PADDING, (ROW_SIZE * device->char_size) - 1, (j * WINDOW_HEIGHT) + Y_TOP_PADDING, (COL_SIZE * device->char_size) - 1);
 
-    return HAL_OK;
+				// Clear character
+//				ILI9341_Rewrite_Character (device, ' ');
+//			}
+//		}
+//	}
+
+	// Set window location at start
+	ILI9341_Set_Window_Location (device, 0x0001, 0x0001 + (ROW_SIZE * DEF_CHAR_SIZE) - 1, 0x000B, 0x000B + (COL_SIZE * DEF_CHAR_SIZE) - 1);
+
+	// Set cursor position to zero
+	device->x_pos = 0;
+	device->y_pos = 0;
+
+	// Set cursor
+	ILI9341_Update_Cursor (device);
+
+	return HAL_OK;
+
+
+
+//	ILI9341_Fill_Screen (device, device->bg_color);
+//
+//    // Set window location for the cursor to print characters
+//    ILI9341_Set_Window_Location (device, 0x0001, 0x0001 + (ROW_SIZE * DEF_CHAR_SIZE) - 1, 0x000B, 0x000B + (COL_SIZE * DEF_CHAR_SIZE) - 1);
+//
+//    // Set cursor position to zero
+//    device->x_pos = 0;
+//    device->y_pos = 0;
+//
+//    //
+//    for (uint8_t i = 0; i < CHAR_COL_LENGTH; i++)		memset (device->characters[i], ' ', sizeof (char) * CHAR_ROW_LENGTH);
+//
+//    // Set cursor
+//    ILI9341_Update_Cursor (device);
+//
+//    return HAL_OK;
 }
 
 /*

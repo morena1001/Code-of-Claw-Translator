@@ -36,12 +36,7 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-#define MIC_SAMPLE_RATE		31250.0f
 #define FFT_LENGTH			256
-#define MIC_DC_OFFSET		255344 // 2^18 - 6800
-#define MIC_PEAK_AMP		262144 // 2^18
-#define FFT_COOLDOWN		40
-#define FFT_INIT_COOLDOWN	75
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -64,6 +59,9 @@ TIM_HandleTypeDef htim6;
 ILI9341_t ili9341;
 trie_node* travel;
 mtch6102_t mtch6102;
+
+arm_rfft_fast_instance_f32 fft_inst;
+int32_t input_dma[FFT_LENGTH * 4];
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -123,6 +121,7 @@ int main(void)
   ILI9341_Init (&ili9341, &hspi2, CS_GPIO_Port, CS_Pin, RS_GPIO_Port, RS_Pin, DC_GPIO_Port, DC_Pin);
   travel = Tree_Init ();
   MTCH6102_Init (&mtch6102, &hi2c1);
+  arm_rfft_fast_init_f32 (&fft_inst, FFT_LENGTH);
 
   HAL_NVIC_SetPriority (TIM2_IRQn, 0, 0);
   HAL_NVIC_EnableIRQ (TIM2_IRQn);
@@ -130,8 +129,9 @@ int main(void)
 
   HAL_NVIC_SetPriority (TIM6_DAC_IRQn, 0, 0);
   HAL_NVIC_EnableIRQ (TIM6_DAC_IRQn);
-//  HAL_TIM_Base_Start_IT (&htim6);
+  HAL_TIM_Base_Start_IT (&htim6);
 
+  HAL_I2S_Receive_DMA (&hi2s3, (uint16_t*) input_dma, FFT_LENGTH * 4);
   /* USER CODE END 2 */
 
   /* Infinite loop */

@@ -25,6 +25,7 @@
 #include "ILI9341.h"
 #include "code_tree.h"
 #include "MTCH6102.h"
+#include "arm_math.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -34,7 +35,13 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-
+#define MIC_SAMPLE_RATE		31250.0f
+#define FFT_LENGTH			256
+#define MIC_DC_OFFSET		255344 // 2^18 - 6800
+#define MIC_PEAK_AMP		262144 // 2^18
+#define BASE_MIC_THRESHOLD	0.5f
+#define FFT_COOLDOWN		40
+#define FFT_INIT_COOLDOWN	75
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -48,11 +55,23 @@ bool toggle = false;
 
 uint8_t end_of_letter_counter = 0;
 char cur_let[2];
+
+uint8_t mic_data_ready = 0;
+uint8_t mic_mag_ready = 0;
+float32_t input_fft[FFT_LENGTH];
+float32_t output_fft[FFT_LENGTH];
+float32_t output_fft_mag[FFT_LENGTH / 2];
+int32_t* buf_ptr;
+float mic_threshold = BASE_MIC_THRESHOLD;
+uint8_t click_cooldown = FFT_INIT_COOLDOWN;
+uint8_t click_peaks[3] = { 0 };
+uint8_t recognized_click = 0;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
 /* USER CODE BEGIN PFP */
 void Check_Trie_Root (char letter);
+uint8_t Read_Click_Status ();
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -68,6 +87,9 @@ extern TIM_HandleTypeDef htim6;
 extern ILI9341_t ili9341;
 extern trie_node* travel;
 extern mtch6102_t mtch6102;
+
+extern arm_rfft_fast_instance_f32 fft_inst;
+extern int32_t input_dma[FFT_LENGTH * 4];
 /* USER CODE END EV */
 
 /******************************************************************************/
@@ -257,7 +279,7 @@ void TIM2_IRQHandler(void)
 		if (!toggle) {
 			toggle = true;
 
-			ILI9341_Clear_Screen(&ili9341);
+			ILI9341_Clear_Screen (&ili9341);
 			*cur_let = '\0';
 			end_of_letter_counter = 0;
 			travel = root;
@@ -292,7 +314,7 @@ void TIM2_IRQHandler(void)
 			travel = root;
 			ILI9341_Increment_Char_Pos (&ili9341);
 		}
-	} else if (!HAL_GPIO_ReadPin (CL_GPIO_Port, CL_Pin)) {
+	} else if (!HAL_GPIO_ReadPin (CL_GPIO_Port, CL_Pin) || Read_Click_Status () == 1) {
 		if (!toggle) {
 			toggle = true;
 
@@ -341,7 +363,32 @@ void TIM2_IRQHandler(void)
 void TIM6_DAC_IRQHandler(void)
 {
   /* USER CODE BEGIN TIM6_DAC_IRQn 0 */
+	if (mic_data_ready) {
+		for (int i = 0, j = 0; i < FFT_LENGTH * 2; i+= 2, j++)
+			input_fft[j] = ((float) (buf_ptr[i] << 2) - MIC_DC_OFFSET) / MIC_PEAK_AMP;
+		input_fft[0] = 0;
 
+		arm_rfft_fast_f32 (&fft_inst, input_fft, output_fft, 0);
+		arm_cmplx_mag_f32 (output_fft, output_fft_mag, FFT_LENGTH / 2);
+		mic_data_ready = 0;
+		mic_mag_ready = 1;
+
+		if (click_cooldown != 0)		click_cooldown--;
+	}
+
+	if (mic_mag_ready && click_cooldown == 0) {
+		for (uint8_t i = 4; i <= 9; i++)	if (output_fft_mag[i] >= mic_threshold)		click_peaks[0] = 1;
+		for (uint8_t i = 28; i <= 33; i++)	if (output_fft_mag[i] >= mic_threshold)		click_peaks[1] = 1;
+		for (uint8_t i = 57; i <= 82; i++)	if (output_fft_mag[i] >= mic_threshold)		click_peaks[2] = 1;
+
+		if (click_peaks[0] & click_peaks[1] & click_peaks[2]) {
+			recognized_click = 1;//++;
+			click_cooldown = FFT_COOLDOWN;
+		}
+
+		click_peaks[0] = 0; click_peaks[1] = 0; click_peaks[2] = 0;
+		mic_mag_ready = 0;
+	}
   /* USER CODE END TIM6_DAC_IRQn 0 */
   HAL_TIM_IRQHandler(&htim6);
   /* USER CODE BEGIN TIM6_DAC_IRQn 1 */
@@ -356,5 +403,21 @@ void Check_Trie_Root (char letter) {
 		*cur_let = Traverse_Tree (&travel, letter);
 		ILI9341_Rewrite_Character (&ili9341, *cur_let);
 	}
+}
+
+uint8_t Read_Click_Status () {
+	uint8_t val = recognized_click;
+	recognized_click = 0;
+	return val;
+}
+
+void HAL_I2S_RxHalfCpltCallback (I2S_HandleTypeDef* hi2s) {
+	buf_ptr = &input_dma[0];
+	mic_data_ready = 1;
+}
+
+void HAL_I2S_RxCpltCallback (I2S_HandleTypeDef* hi2s) {
+	buf_ptr = &input_dma[FFT_LENGTH * 2];
+	mic_data_ready = 1;
 }
 /* USER CODE END 1 */
