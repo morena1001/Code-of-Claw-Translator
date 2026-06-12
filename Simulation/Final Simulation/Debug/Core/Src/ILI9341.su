@@ -1,4 +1,4 @@
-../Core/Src/ILI9341.c:18:19:ILI9341_Init	80	static
+../Core/Src/ILI9341.c:18:19:ILI9341_Init	168	static
 ../Core/Src/ILI9341.c:99:19:ILI9341_Reset	32	static
 ../Core/Src/ILI9341.c:124:19:ILI9341_Set_Window_Location	40	static
 ../Core/Src/ILI9341.c:153:19:ILI9341_Set_Window_Location_Size	40	static

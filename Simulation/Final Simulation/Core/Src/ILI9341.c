@@ -30,9 +30,9 @@ HAL_StatusTypeDef ILI9341_Init (ILI9341_t* device, SPI_HandleTypeDef* spi_handle
 	device->y_pos = 0;
 
 	// Initialize default colors for bg and char
-	device->bg_color = COLOR_WHITE;
-	device->char_color = COLOR_BLACK;
-	device->cursor_color = COLOR_BLUE;
+	device->bg_color = COLOR_GRAYS[0];//COLOR_WHITE;
+	device->char_color = COLOR_M_YELLOW;//COLOR_BLACK;
+	device->cursor_color = COLOR_GREENS[0];//COLOR_REDDISH;//COLOR_BLUE;
 
 	device->characters = malloc (sizeof (char*) * CHAR_COL_LENGTH);
 	for (uint8_t i = 0; i < CHAR_COL_LENGTH; i++) {
