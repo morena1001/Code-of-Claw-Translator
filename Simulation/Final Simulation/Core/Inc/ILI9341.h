@@ -23,11 +23,17 @@
 #define CHAR_COL_LENGTH		13
 #define CHAR_ROW_LENGTH		14
 #define DEF_CHAR_SIZE		3
+#define CUE_CHAR_SIZE		1
+#define CUE_MAX_LENGTH		10
 
 #define X_LEFT_PADDING		1
 #define Y_TOP_PADDING		11
 #define WINDOW_WIDTH		17
 #define WINDOW_HEIGHT		23
+#define X_CUE_PADDING		1
+#define Y_CUE_PADDING		310
+#define CUE_WINDOW_WIDTH	7
+#define CUE_WINDOW_HEIGHT	9
 
 // COLORS ARE IN BGR FORMAT
 #define COLOR_WHITE		0xFFFFFF
@@ -71,9 +77,21 @@
 #define PIXELS_PRD	(uint8_t[]) { 0x00, 0x00, 0x00, 0x00, 0x00, 0x0C, 0x0C }
 #define PIXELS_SPC	(uint8_t[]) { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 }
 #define PIXELS_CRS	(uint8_t[]) { 0x00, 0x00, 0x00, 0x00, 0x00, 0x1F, 0x1F }
+#define PIXELS_CLK	(uint8_t[]) { 0x10, 0x10, 0x08, 0x04, 0x02, 0x02, 0x01 }
+#define PIXELS_SCR 	(uint8_t[]) { 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04 }
+#define PIXELS_TAP	(uint8_t[])	{ 0x01, 0x01, 0x02, 0x04, 0x08, 0x10, 0x10 }
+#define PIXELS_0	(uint8_t[]) { 0x0E, 0x19, 0x19, 0x15, 0x13, 0x13, 0x0E }
+#define PIXELS_1	(uint8_t[]) { 0x04, 0x0C, 0x04, 0x04, 0x04, 0x04, 0x0E }
+#define PIXELS_2	(uint8_t[]) { 0x03, 0x11, 0x02, 0x04, 0x08, 0x10, 0x1E }
+#define PIXELS_3	(uint8_t[]) { 0x0E, 0x11, 0x01, 0x02, 0x01, 0x11, 0x0E }
+#define PIXELS_4	(uint8_t[]) { 0x11, 0x11, 0x11, 0x0F, 0x01, 0x01, 0x01 }
+#define PIXELS_5	(uint8_t[]) { 0x0F, 0x10, 0x10, 0x0E, 0x01, 0x11, 0x0E }
+#define PIXELS_6	(uint8_t[]) { 0x08, 0x10, 0x10, 0x16, 0x19, 0x11, 0x0E }
+#define PIXELS_7	(uint8_t[]) { 0x1F, 0x01, 0x01, 0x02, 0x02, 0x04, 0x04 }
+#define PIXELS_8	(uint8_t[]) { 0x0E, 0x11, 0x11, 0x0E, 0x11, 0x11, 0x11 }
+#define PIXELS_9	(uint8_t[]) { 0x0E, 0x11, 0x11, 0x0F, 0x01, 0x01, 0x01 }
 
-#define GET_PIXELS(let)	(let == 'A' ? PIXELS_A : (let == 'B' ? PIXELS_B : (let == 'C' ? PIXELS_C : (let == 'D' ? PIXELS_D : (let == 'E' ? PIXELS_E : (let == 'F' ? PIXELS_F : (let == 'G' ? PIXELS_G : (let == 'H' ? PIXELS_H : (let == 'I' ? PIXELS_I : (let == 'J' ? PIXELS_J : (let == 'K' ? PIXELS_K : (let == 'L' ? PIXELS_L : (let == 'M' ? PIXELS_M : (let == 'N' ? PIXELS_N : (let == 'O' ? PIXELS_O : (let == 'P' ? PIXELS_P : (let == 'Q' ? PIXELS_Q : (let == 'R' ? PIXELS_R : (let == 'S' ? PIXELS_S : (let == 'T' ? PIXELS_T : (let == 'U' ? PIXELS_U : (let == 'V' ? PIXELS_V : (let == 'W' ? PIXELS_W : (let == 'X' ? PIXELS_X : (let == 'Y' ? PIXELS_Y : (let == 'Z' ? PIXELS_Z : (let == '.' ? PIXELS_PRD : (let == ' ' ? PIXELS_SPC : PIXELS_SPC))))))))))))))))))))))))))))
-
+#define GET_PIXELS(let)	(let == 'A' ? PIXELS_A : (let == 'B' ? PIXELS_B : (let == 'C' ? PIXELS_C : (let == 'D' ? PIXELS_D : (let == 'E' ? PIXELS_E : (let == 'F' ? PIXELS_F : (let == 'G' ? PIXELS_G : (let == 'H' ? PIXELS_H : (let == 'I' ? PIXELS_I : (let == 'J' ? PIXELS_J : (let == 'K' ? PIXELS_K : (let == 'L' ? PIXELS_L : (let == 'M' ? PIXELS_M : (let == 'N' ? PIXELS_N : (let == 'O' ? PIXELS_O : (let == 'P' ? PIXELS_P : (let == 'Q' ? PIXELS_Q : (let == 'R' ? PIXELS_R : (let == 'S' ? PIXELS_S : (let == 'T' ? PIXELS_T : (let == 'U' ? PIXELS_U : (let == 'V' ? PIXELS_V : (let == 'W' ? PIXELS_W : (let == 'X' ? PIXELS_X : (let == 'Y' ? PIXELS_Y : (let == 'Z' ? PIXELS_Z : (let == '.' ? PIXELS_PRD : (let == ' ' ? PIXELS_SPC : (let == '\\' ? PIXELS_CLK : (let == '|' ? PIXELS_SCR : (let == '/' ? PIXELS_TAP : (let == '0' ? PIXELS_0 : (let == '1' ? PIXELS_1 : (let == '2' ? PIXELS_2 : (let == '3' ? PIXELS_3 : (let == '4' ? PIXELS_4 : (let == '5' ? PIXELS_5 : (let == '6' ? PIXELS_6 : (let == '7' ? PIXELS_7 : (let == '8' ? PIXELS_8 : (let == '9' ? PIXELS_9 : PIXELS_SPC)))))))))))))))))))))))))))))))))))))))))
 /*
  * REGISTERS
  */
@@ -106,6 +124,8 @@ typedef struct {
 	uint32_t bg_color, char_color, cursor_color;
 } ILI9341_t;
 
+typedef enum { CLICK, SCRATCH, TAP, DELETE, PERIOD, SPACE, CLEAR, MIC, EMPTY } cue_t;
+
 /*
  * INITIALIZATION FUNCTION
  */
@@ -132,6 +152,9 @@ HAL_StatusTypeDef ILI9341_Update_Cursor (ILI9341_t* device);
 void ILI9341_Increment_Char_Pos (ILI9341_t* device);
 HAL_StatusTypeDef ILI9341_Clear_Cursor (ILI9341_t* device);
 HAL_StatusTypeDef ILI9341_Clear_Screen (ILI9341_t* device);
+HAL_StatusTypeDef ILI9341_Write_Cue (ILI9341_t* device, char* string);
+HAL_StatusTypeDef ILI9341_Delete_Cue (ILI9341_t* device);
+HAL_StatusTypeDef ILI9341_Print_Cue (ILI9341_t* device, cue_t cue);
 
 /*
  * LOW-LEVEL FUNCTIONS

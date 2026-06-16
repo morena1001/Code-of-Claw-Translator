@@ -66,6 +66,8 @@ float mic_threshold = BASE_MIC_THRESHOLD;
 uint8_t click_cooldown = FFT_INIT_COOLDOWN;
 uint8_t click_peaks[3] = { 0 };
 uint8_t recognized_click = 0;
+
+uint8_t timer_started = 0;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -83,6 +85,7 @@ uint8_t Read_Click_Status ();
 extern DMA_HandleTypeDef hdma_spi3_rx;
 extern TIM_HandleTypeDef htim2;
 extern TIM_HandleTypeDef htim6;
+extern TIM_HandleTypeDef htim16;
 /* USER CODE BEGIN EV */
 extern ILI9341_t ili9341;
 extern trie_node* travel;
@@ -262,6 +265,25 @@ void DMA1_Channel2_IRQHandler(void)
 }
 
 /**
+  * @brief This function handles TIM1 update and TIM16 interrupts.
+  */
+void TIM1_UP_TIM16_IRQHandler(void)
+{
+	if (timer_started == 1) {
+		ILI9341_Delete_Cue (&ili9341);
+		timer_started = 0;
+		HAL_TIM_Base_Stop_IT (&htim16);
+	} else timer_started = 1;
+  /* USER CODE BEGIN TIM1_UP_TIM16_IRQn 0 */
+
+  /* USER CODE END TIM1_UP_TIM16_IRQn 0 */
+  HAL_TIM_IRQHandler(&htim16);
+  /* USER CODE BEGIN TIM1_UP_TIM16_IRQn 1 */
+
+  /* USER CODE END TIM1_UP_TIM16_IRQn 1 */
+}
+
+/**
   * @brief This function handles TIM2 global interrupt.
   */
 void TIM2_IRQHandler(void)
@@ -283,6 +305,10 @@ void TIM2_IRQHandler(void)
 			*cur_let = '\0';
 			end_of_letter_counter = 0;
 			travel = root;
+
+			__HAL_TIM_SET_COUNTER (&htim16, 0);
+			ILI9341_Print_Cue (&ili9341, CLEAR);
+			HAL_TIM_Base_Start_IT (&htim16);
 		}
 	} else if (!HAL_GPIO_ReadPin (BB_GPIO_Port, BB_Pin)) {
 		if (!toggle) {
@@ -293,6 +319,10 @@ void TIM2_IRQHandler(void)
 			end_of_letter_counter = 0;
 			travel = root;
 			ILI9341_Delete_Character (&ili9341);
+
+			__HAL_TIM_SET_COUNTER (&htim16, 0);
+			ILI9341_Print_Cue (&ili9341, DELETE);
+			HAL_TIM_Base_Start_IT (&htim16);
 		}
 	} else if (!HAL_GPIO_ReadPin (NC_GPIO_Port, NC_Pin)) {
 		if (!toggle) {
@@ -302,6 +332,10 @@ void TIM2_IRQHandler(void)
 			end_of_letter_counter = 0;
 			travel = root;
 			ILI9341_Increment_Char_Pos (&ili9341);
+
+			__HAL_TIM_SET_COUNTER (&htim16, 0);
+			ILI9341_Print_Cue (&ili9341, SPACE);
+			HAL_TIM_Base_Start_IT (&htim16);
 		}
 	} else if (!HAL_GPIO_ReadPin (PB_GPIO_Port, PB_Pin)) {
 		if (!toggle) {
@@ -313,6 +347,10 @@ void TIM2_IRQHandler(void)
 			end_of_letter_counter = 0;
 			travel = root;
 			ILI9341_Increment_Char_Pos (&ili9341);
+
+			__HAL_TIM_SET_COUNTER (&htim16, 0);
+			ILI9341_Print_Cue (&ili9341, PERIOD);
+			HAL_TIM_Base_Start_IT (&htim16);
 		}
 	} else if (!HAL_GPIO_ReadPin (CL_GPIO_Port, CL_Pin) || Read_Click_Status () == 1) {
 		if (!toggle) {
@@ -323,6 +361,10 @@ void TIM2_IRQHandler(void)
 			Check_Trie_Root('\\');
 
 			end_of_letter_counter = 251;
+
+			__HAL_TIM_SET_COUNTER (&htim16, 0);
+			ILI9341_Print_Cue (&ili9341, CLICK);
+			HAL_TIM_Base_Start_IT (&htim16);
 		}
 	} else if (!HAL_GPIO_ReadPin (ST_GPIO_Port, ST_Pin) || MTCH6102_Read_Scratch_Status (&mtch6102)) {
 		if (!toggle) {
@@ -333,6 +375,10 @@ void TIM2_IRQHandler(void)
 			Check_Trie_Root('|');
 
 			end_of_letter_counter = 251;
+
+			__HAL_TIM_SET_COUNTER (&htim16, 0);
+			ILI9341_Print_Cue (&ili9341, SCRATCH);
+			HAL_TIM_Base_Start_IT (&htim16);
 		}
 	} else if (!HAL_GPIO_ReadPin (TP_GPIO_Port, TP_Pin) || MTCH6102_Read_Tap_Status (&mtch6102)) {
 		if (!toggle) {
@@ -343,6 +389,10 @@ void TIM2_IRQHandler(void)
 			Check_Trie_Root('/');
 
 			end_of_letter_counter = 251;
+
+			__HAL_TIM_SET_COUNTER (&htim16, 0);
+			ILI9341_Print_Cue (&ili9341, TAP);
+			HAL_TIM_Base_Start_IT (&htim16);
 		}
 	} else {
 		toggle = false;

@@ -5,8 +5,8 @@
 ../Core/Src/ILI9341.c:184:19:ILI9341_Write_Pixel	24	static
 ../Core/Src/ILI9341.c:195:19:ILI9341_Write_Pixels	32	static
 ../Core/Src/ILI9341.c:217:6:ILI9341_Change_Font_Size	16	static
-../Core/Src/ILI9341.c:221:19:ILI9341_Write_Character	288	static
-../Core/Src/ILI9341.c:266:19:ILI9341_Rewrite_Character	272	static
+../Core/Src/ILI9341.c:221:19:ILI9341_Write_Character	392	static
+../Core/Src/ILI9341.c:266:19:ILI9341_Rewrite_Character	376	static
 ../Core/Src/ILI9341.c:295:19:ILI9341_Delete_Character	32	static
 ../Core/Src/ILI9341.c:317:19:ILI9341_Write_String	24	static
 ../Core/Src/ILI9341.c:325:19:ILI9341_Fill_Screen	40	static
@@ -14,5 +14,8 @@
 ../Core/Src/ILI9341.c:389:6:ILI9341_Increment_Char_Pos	32	static
 ../Core/Src/ILI9341.c:406:19:ILI9341_Clear_Cursor	40	static
 ../Core/Src/ILI9341.c:436:19:ILI9341_Clear_Screen	32	static
-../Core/Src/ILI9341.c:502:19:ILI9341_Transmit_Cmd	16	static
-../Core/Src/ILI9341.c:510:19:ILI9341_Transmit_Data	24	static
+../Core/Src/ILI9341.c:466:19:ILI9341_Write_Cue	384	static
+../Core/Src/ILI9341.c:502:19:ILI9341_Delete_Cue	40	static
+../Core/Src/ILI9341.c:525:19:ILI9341_Print_Cue	40	static
+../Core/Src/ILI9341.c:560:19:ILI9341_Transmit_Cmd	16	static
+../Core/Src/ILI9341.c:568:19:ILI9341_Transmit_Data	24	static

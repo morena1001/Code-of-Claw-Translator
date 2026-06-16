@@ -88,7 +88,7 @@ HAL_StatusTypeDef ILI9341_Init (ILI9341_t* device, SPI_HandleTypeDef* spi_handle
     // Set cursor
     ILI9341_Update_Cursor (device);
 
-//	return status;
+    // return status;
 	return HAL_OK;
 }
 
@@ -450,19 +450,6 @@ HAL_StatusTypeDef ILI9341_Clear_Screen (ILI9341_t* device) {
 		}
 	}
 
-//	for (uint8_t i = 0; i < CHAR_COL_LENGTH; i++) {
-//		for (uint8_t j = 0; j < CHAR_ROW_LENGTH; j++) {
-//			if (device->characters[i][j] != '\0' && device->characters[i][j] != ' ') {
-
-				// Update window location
-//				ILI9341_Set_Window_Location_Size (device, (i * WINDOW_WIDTH) + X_LEFT_PADDING, (ROW_SIZE * device->char_size) - 1, (j * WINDOW_HEIGHT) + Y_TOP_PADDING, (COL_SIZE * device->char_size) - 1);
-
-				// Clear character
-//				ILI9341_Rewrite_Character (device, ' ');
-//			}
-//		}
-//	}
-
 	// Set window location at start
 	ILI9341_Set_Window_Location (device, 0x0001, 0x0001 + (ROW_SIZE * DEF_CHAR_SIZE) - 1, 0x000B, 0x000B + (COL_SIZE * DEF_CHAR_SIZE) - 1);
 
@@ -474,25 +461,96 @@ HAL_StatusTypeDef ILI9341_Clear_Screen (ILI9341_t* device) {
 	ILI9341_Update_Cursor (device);
 
 	return HAL_OK;
+}
 
+HAL_StatusTypeDef ILI9341_Write_Cue (ILI9341_t* device, char* string) {
+	uint8_t k = 0;
+	while (string[k] != '\0' && string[k] != '\n') {
+//		ILI9341_Write_Character (device, string[i++]);
 
+		// Allocate the memory to send all of the data for a character at the same time
+		uint32_t* colors = malloc (sizeof (uint32_t) * ROW_SIZE * CUE_CHAR_SIZE * COL_SIZE * CUE_CHAR_SIZE);
 
-//	ILI9341_Fill_Screen (device, device->bg_color);
-//
-//    // Set window location for the cursor to print characters
-//    ILI9341_Set_Window_Location (device, 0x0001, 0x0001 + (ROW_SIZE * DEF_CHAR_SIZE) - 1, 0x000B, 0x000B + (COL_SIZE * DEF_CHAR_SIZE) - 1);
-//
-//    // Set cursor position to zero
-//    device->x_pos = 0;
-//    device->y_pos = 0;
-//
-//    //
-//    for (uint8_t i = 0; i < CHAR_COL_LENGTH; i++)		memset (device->characters[i], ' ', sizeof (char) * CHAR_ROW_LENGTH);
-//
-//    // Set cursor
-//    ILI9341_Update_Cursor (device);
-//
-//    return HAL_OK;
+		// Grab the pixel format at size 1 for a given character
+		uint8_t format[COL_SIZE];
+		if (string[k] > 96) string[k] -= 32; // Make all letters capitalized
+		memcpy (format, GET_PIXELS(string[k]), sizeof (uint8_t) * COL_SIZE);
+
+		// Add color to the pixel format and copy it to the big array
+		for (uint8_t i = 0; i < COL_SIZE * CUE_CHAR_SIZE; i++) {
+			for (uint8_t j = ROW_SIZE * CUE_CHAR_SIZE; j > 0; j--) {
+				uint8_t c = ceil (i / CUE_CHAR_SIZE);
+				uint8_t d = ceil ((float) j / (float) CUE_CHAR_SIZE) - 1;
+
+				if ((format[c] >> d) & 1)   colors[((i + 1) * ROW_SIZE * CUE_CHAR_SIZE) - j] = device->char_color;
+				else                        colors[((i + 1) * ROW_SIZE * CUE_CHAR_SIZE) - j] = device->bg_color;
+			}
+		}
+
+		ILI9341_Write_Pixels (device, colors, ROW_SIZE * CUE_CHAR_SIZE * COL_SIZE * CUE_CHAR_SIZE);
+		free (colors);
+
+		k++;
+
+		// Update character drawing window according to position
+		ILI9341_Set_Window_Location_Size (device, (k * CUE_WINDOW_WIDTH) + X_CUE_PADDING, (ROW_SIZE * CUE_CHAR_SIZE) - 1, Y_CUE_PADDING, (COL_SIZE * CUE_CHAR_SIZE) - 1);
+	}
+
+	return HAL_OK;
+}
+
+HAL_StatusTypeDef ILI9341_Delete_Cue (ILI9341_t* device) {
+	uint8_t prev_char_size = device->char_size;
+	uint16_t prev_x_left = device->win_s_x;
+	uint16_t prev_x_right = device->win_e_x;
+	uint16_t prev_y_up = device->win_s_y;
+	uint16_t prev_y_down = device->win_e_y;
+
+	ILI9341_Set_Window_Location (device, X_CUE_PADDING, X_CUE_PADDING + (ROW_SIZE * CUE_CHAR_SIZE) - 1, Y_CUE_PADDING, Y_CUE_PADDING + (COL_SIZE * CUE_CHAR_SIZE) - 1);
+	char* string = (char*) malloc (sizeof (char) * CUE_MAX_LENGTH);
+	memcpy (string, "         ", sizeof (char) * 10);
+	ILI9341_Write_Cue (device, string);
+
+	device->char_size = prev_char_size;
+	device-> win_s_x = prev_x_left;
+	device->win_e_x = prev_x_right;
+	device->win_s_y = prev_y_up;
+	device->win_e_y = prev_y_down;
+
+	ILI9341_Set_Window_Location (device, device->win_s_x, device->win_e_x, device->win_s_y, device->win_e_y);
+
+	return HAL_OK;
+}
+
+HAL_StatusTypeDef ILI9341_Print_Cue (ILI9341_t* device, cue_t cue) {
+	uint8_t prev_char_size = device->char_size;
+	uint16_t prev_x_left = device->win_s_x;
+	uint16_t prev_x_right = device->win_e_x;
+	uint16_t prev_y_up = device->win_s_y;
+	uint16_t prev_y_down = device->win_e_y;
+
+	ILI9341_Set_Window_Location (device, X_CUE_PADDING, X_CUE_PADDING + (ROW_SIZE * CUE_CHAR_SIZE) - 1, Y_CUE_PADDING, Y_CUE_PADDING + (COL_SIZE * CUE_CHAR_SIZE) - 1);
+	char* string = (char*) malloc (sizeof (char) * CUE_MAX_LENGTH);
+	if (cue == CLICK)			memcpy (string, "CLK \\", sizeof (char) * 6);
+	else if (cue == SCRATCH)	memcpy (string, "SCR |", sizeof (char) * 6);
+	else if (cue == TAP)		memcpy (string, "TAP /", sizeof (char) * 6);
+	else if (cue == DELETE)		memcpy (string, "DEL", sizeof (char) * 4);
+	else if (cue == PERIOD)		memcpy (string, "PER", sizeof (char) * 4);
+	else if (cue == SPACE)		memcpy (string, "SPC", sizeof (char) * 4);
+	else if (cue == CLEAR)		memcpy (string, "CLR", sizeof (char) * 4);
+//	else if (cue == MIC)		memcpy (string, "MIC \n", sizeof (char) * CUE_MAX_LENGTH);
+//	memcpy (string, "a        ", sizeof (char) * CUE_MAX_LENGTH);
+	ILI9341_Write_Cue (device, string);
+
+	device->char_size = prev_char_size;
+	device-> win_s_x = prev_x_left;
+	device->win_e_x = prev_x_right;
+	device->win_s_y = prev_y_up;
+	device->win_e_y = prev_y_down;
+
+	ILI9341_Set_Window_Location (device, device->win_s_x, device->win_e_x, device->win_s_y, device->win_e_y);
+
+	return HAL_OK;
 }
 
 /*
