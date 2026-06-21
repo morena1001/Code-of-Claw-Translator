@@ -269,12 +269,12 @@ void DMA1_Channel2_IRQHandler(void)
   */
 void TIM1_UP_TIM16_IRQHandler(void)
 {
+  /* USER CODE BEGIN TIM1_UP_TIM16_IRQn 0 */
 	if (timer_started == 1) {
 		ILI9341_Delete_Cue (&ili9341);
 		timer_started = 0;
 		HAL_TIM_Base_Stop_IT (&htim16);
 	} else timer_started = 1;
-  /* USER CODE BEGIN TIM1_UP_TIM16_IRQn 0 */
 
   /* USER CODE END TIM1_UP_TIM16_IRQn 0 */
   HAL_TIM_IRQHandler(&htim16);
