@@ -52,6 +52,12 @@ default.size.stdout \
 OBJDUMP_LIST += \
 Code\ of\ Claw\ Black\ Pill.list \
 
+OBJCOPY_HEX += \
+Code\ of\ Claw\ Black\ Pill.hex \
+
+OBJCOPY_BIN += \
+Code\ of\ Claw\ Black\ Pill.bin \
+
 
 # All Target
 all: main-build
@@ -75,12 +81,22 @@ Code\ of\ Claw\ Black\ Pill.list: $(EXECUTABLES) makefile objects.list $(OPTIONA
 	@echo 'Finished building: $@'
 	@echo ' '
 
+Code\ of\ Claw\ Black\ Pill.hex: $(EXECUTABLES) makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-objcopy  -O ihex $(EXECUTABLES) "Code of Claw Black Pill.hex"
+	@echo 'Finished building: $@'
+	@echo ' '
+
+Code\ of\ Claw\ Black\ Pill.bin: $(EXECUTABLES) makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-objcopy  -O binary $(EXECUTABLES) "Code of Claw Black Pill.bin"
+	@echo 'Finished building: $@'
+	@echo ' '
+
 # Other Targets
 clean:
-	-$(RM) Code\ of\ Claw\ Black\ Pill.elf Code\ of\ Claw\ Black\ Pill.list Code\ of\ Claw\ Black\ Pill.map Code\\ of\\ Claw\\ Black\\ Pill.elf default.size.stdout
+	-$(RM) Code\ of\ Claw\ Black\ Pill.bin Code\ of\ Claw\ Black\ Pill.elf Code\ of\ Claw\ Black\ Pill.hex Code\ of\ Claw\ Black\ Pill.list Code\ of\ Claw\ Black\ Pill.map Code\\ of\\ Claw\\ Black\\ Pill.elf default.size.stdout
 	-@echo ' '
 
-secondary-outputs: $(SIZE_OUTPUT) $(OBJDUMP_LIST)
+secondary-outputs: $(SIZE_OUTPUT) $(OBJDUMP_LIST) $(OBJCOPY_HEX) $(OBJCOPY_BIN)
 
 fail-specified-linker-script-missing:
 	@echo 'Error: Cannot find the specified linker script. Check the linker settings in the build configuration.'
