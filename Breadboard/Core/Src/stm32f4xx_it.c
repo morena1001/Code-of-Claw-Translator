@@ -68,6 +68,9 @@ uint8_t click_peaks[3] = { 0 };
 uint8_t recognized_click = 0;
 
 uint8_t timer_started = 0;
+
+uint8_t threshold = 20;
+uint16_t prev_val = 0;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -82,6 +85,7 @@ uint8_t Read_Click_Status ();
 /* USER CODE END 0 */
 
 /* External variables --------------------------------------------------------*/
+extern DMA_HandleTypeDef hdma_adc1;
 extern DMA_HandleTypeDef hdma_spi3_rx;
 extern TIM_HandleTypeDef htim2;
 extern TIM_HandleTypeDef htim3;
@@ -92,6 +96,7 @@ extern trie_node* travel;
 extern mtch6102_t mtch6102;
 extern arm_rfft_fast_instance_f32 fft_inst;
 extern int32_t input_dma[FFT_LENGTH * 4];
+extern uint16_t raw_val;
 /* USER CODE END EV */
 
 /******************************************************************************/
@@ -379,6 +384,12 @@ void TIM2_IRQHandler(void)
 			end_of_letter_counter--;
 		}
 	}
+
+	if (abs (raw_val - prev_val) > threshold) {
+		prev_val = raw_val;
+
+		mic_threshold = (((float) (raw_val) * 14.5) / 4095) + 0.5;
+	}
   /* USER CODE END TIM2_IRQn 0 */
   HAL_TIM_IRQHandler(&htim2);
   /* USER CODE BEGIN TIM2_IRQn 1 */
@@ -441,6 +452,20 @@ void TIM4_IRQHandler(void)
   /* USER CODE BEGIN TIM4_IRQn 1 */
 
   /* USER CODE END TIM4_IRQn 1 */
+}
+
+/**
+  * @brief This function handles DMA2 stream0 global interrupt.
+  */
+void DMA2_Stream0_IRQHandler(void)
+{
+  /* USER CODE BEGIN DMA2_Stream0_IRQn 0 */
+
+  /* USER CODE END DMA2_Stream0_IRQn 0 */
+  HAL_DMA_IRQHandler(&hdma_adc1);
+  /* USER CODE BEGIN DMA2_Stream0_IRQn 1 */
+
+  /* USER CODE END DMA2_Stream0_IRQn 1 */
 }
 
 /* USER CODE BEGIN 1 */
