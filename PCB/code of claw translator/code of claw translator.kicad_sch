@@ -2558,10 +2558,6 @@
 		(uuid "2122aa01-59ce-4692-8625-b69866c3ce89")
 	)
 	(no_connect
-		(at 72.39 129.54)
-		(uuid "2db05cd8-05cb-4372-83e3-b70cfd3c48d5")
-	)
-	(no_connect
 		(at 162.56 55.88)
 		(uuid "43595d6c-8fb0-4896-ba7f-3477f3d26db0")
 	)
@@ -2622,10 +2618,6 @@
 		(uuid "c0d52a8e-4390-4ff0-8314-79b57f920a8b")
 	)
 	(no_connect
-		(at 72.39 124.46)
-		(uuid "d5d395d8-f240-42a6-b7f9-730a460e0009")
-	)
-	(no_connect
 		(at 162.56 53.34)
 		(uuid "da1bf76f-866e-45c7-85d9-45bf6c6bf0ee")
 	)
@@ -2660,6 +2652,16 @@
 			(type dash)
 		)
 		(uuid "038bfc26-a72d-41f3-b7eb-53a1ae9d46c0")
+	)
+	(polyline
+		(pts
+			(xy 71.12 121.92) (xy 71.12 137.16)
+		)
+		(stroke
+			(width 0)
+			(type dash)
+		)
+		(uuid "07b4b2ca-72b5-4ebb-b9f9-c5f52eb84c63")
 	)
 	(polyline
 		(pts
@@ -2740,6 +2742,16 @@
 			(type dash)
 		)
 		(uuid "26a521a2-bfcb-4ac3-b20a-8fa612132b21")
+	)
+	(polyline
+		(pts
+			(xy 27.94 121.92) (xy 27.94 137.16)
+		)
+		(stroke
+			(width 0)
+			(type dash)
+		)
+		(uuid "288ddf4a-bfdf-415d-ab13-be3b7c33ea74")
 	)
 	(polyline
 		(pts
@@ -2873,13 +2885,13 @@
 	)
 	(polyline
 		(pts
-			(xy 64.77 106.68) (xy 64.77 121.92)
+			(xy 27.94 121.92) (xy 71.12 121.92)
 		)
 		(stroke
 			(width 0)
 			(type dash)
 		)
-		(uuid "65bfe2f7-cfa3-4c90-a1a7-2eddefc93074")
+		(uuid "635ecc55-f096-4443-800b-4de9cf27c6a5")
 	)
 	(polyline
 		(pts
@@ -2963,13 +2975,13 @@
 	)
 	(polyline
 		(pts
-			(xy 99.06 132.08) (xy 99.06 121.92)
+			(xy 71.12 137.16) (xy 27.94 137.16)
 		)
 		(stroke
 			(width 0)
 			(type dash)
 		)
-		(uuid "8a2ca5de-8b89-4cce-b8e4-58329e48b5b0")
+		(uuid "8d28cf90-1217-4627-ad75-838aff932246")
 	)
 	(polyline
 		(pts
@@ -3013,16 +3025,6 @@
 	)
 	(polyline
 		(pts
-			(xy 99.06 106.68) (xy 99.06 121.92)
-		)
-		(stroke
-			(width 0)
-			(type dash)
-		)
-		(uuid "be65e75b-907c-4e4b-b17e-7ae919642d82")
-	)
-	(polyline
-		(pts
 			(xy 121.92 25.4) (xy 86.36 25.4)
 		)
 		(stroke
@@ -3050,16 +3052,6 @@
 			(type dash)
 		)
 		(uuid "c82fea2a-2e02-4fab-a68a-cb25a02b78b3")
-	)
-	(polyline
-		(pts
-			(xy 64.77 121.92) (xy 64.77 132.08)
-		)
-		(stroke
-			(width 0)
-			(type dash)
-		)
-		(uuid "c88f7c29-5b3a-49c0-984e-55bf73fb0d88")
 	)
 	(polyline
 		(pts
@@ -3173,16 +3165,6 @@
 	)
 	(polyline
 		(pts
-			(xy 64.77 132.08) (xy 99.06 132.08)
-		)
-		(stroke
-			(width 0)
-			(type dash)
-		)
-		(uuid "eedd94f4-197f-4f9d-9c2b-a4d3fc651a71")
-	)
-	(polyline
-		(pts
 			(xy 16.51 30.48) (xy 16.51 39.37)
 		)
 		(stroke
@@ -3221,16 +3203,6 @@
 		)
 		(uuid "f4e6cc58-5c34-4bf3-8bd8-8bfa8cf0ed16")
 	)
-	(polyline
-		(pts
-			(xy 64.77 106.68) (xy 99.06 106.68)
-		)
-		(stroke
-			(width 0)
-			(type dash)
-		)
-		(uuid "f689c1f3-7883-48f1-a3c2-e18ed28ee2bc")
-	)
 	(text "Space button"
 		(exclude_from_sim no)
 		(at 93.218 27.178 0)
@@ -3253,7 +3225,7 @@
 	)
 	(text "M2"
 		(exclude_from_sim no)
-		(at 69.85 164.338 0)
+		(at 29.21 164.338 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -3281,6 +3253,16 @@
 		)
 		(uuid "78daac9c-c4f2-4d01-b59a-b0fa739db4f9")
 	)
+	(text "M3\n"
+		(exclude_from_sim no)
+		(at 29.21 138.938 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+		)
+		(uuid "79ef9502-0117-4c06-884f-dbcc9b1bbe3e")
+	)
 	(text "SPH0645LM4H\n"
 		(exclude_from_sim no)
 		(at 219.202 122.428 0)
@@ -3300,16 +3282,6 @@
 			)
 		)
 		(uuid "9ace9637-625a-4128-ad64-520fe49eba09")
-	)
-	(text "Potentiometer"
-		(exclude_from_sim no)
-		(at 71.374 133.604 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-		)
-		(uuid "9e49f815-5697-413e-8752-0cc5737a7d80")
 	)
 	(text "Power sockets"
 		(exclude_from_sim no)
@@ -3538,28 +3510,6 @@
 		(uuid "0c69b1b0-2a26-4639-a54d-2d9acc58b6ed")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
 			(at 18.6653 22.86 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify right)
-				(hide yes)
-			)
-		)
-	)
-	(global_label "3.3V"
-		(shape input)
-		(at 72.39 109.22 180)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify right)
-		)
-		(uuid "0ce4be7e-9880-4bce-a1e5-04d7ee000bd6")
-		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 65.2924 109.22 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4779,28 +4729,6 @@
 			)
 		)
 	)
-	(global_label "A0"
-		(shape input)
-		(at 72.39 114.3 180)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify right)
-		)
-		(uuid "c9cb1881-4abb-4b0e-9d2a-8ffee2ee6432")
-		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 67.1067 114.3 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify right)
-				(hide yes)
-			)
-		)
-	)
 	(global_label "GND"
 		(shape input)
 		(at 162.56 30.48 180)
@@ -4858,28 +4786,6 @@
 		(uuid "cc83b2bc-fa96-4111-b67d-3acb30bf3efb")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
 			(at 157.2767 27.94 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify right)
-				(hide yes)
-			)
-		)
-	)
-	(global_label "GND"
-		(shape input)
-		(at 72.39 119.38 180)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify right)
-		)
-		(uuid "cd06db95-90b6-49d1-9ff2-5e2b5e924d39")
-		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 65.5343 119.38 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5901,17 +5807,17 @@
 		)
 	)
 	(symbol
-		(lib_id "Connector:Conn_01x01_Socket")
-		(at 77.47 119.38 0)
+		(lib_id "Mechanical:MountingHole")
+		(at 53.34 125.73 0)
 		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
+		(exclude_from_sim yes)
+		(in_bom no)
 		(on_board yes)
 		(dnp no)
 		(fields_autoplaced yes)
-		(uuid "45c3ee6a-322b-487e-b727-62a3dc3b1967")
-		(property "Reference" "J29"
-			(at 78.74 118.1099 0)
+		(uuid "52404bab-c92e-45f8-8fc9-828eb284e225")
+		(property "Reference" "H7"
+			(at 55.88 124.4599 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5919,8 +5825,8 @@
 				(justify left)
 			)
 		)
-		(property "Value" "Conn_01x01_Socket"
-			(at 78.74 120.6499 0)
+		(property "Value" "MountingHole"
+			(at 55.88 126.9999 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5928,8 +5834,8 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Connector_PinSocket_2.54mm:PinSocket_1x01_P2.54mm_Vertical"
-			(at 77.47 119.38 0)
+		(property "Footprint" "MountingHole:MountingHole_3.2mm_M3"
+			(at 53.34 125.73 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5938,7 +5844,7 @@
 			)
 		)
 		(property "Datasheet" "~"
-			(at 77.47 119.38 0)
+			(at 53.34 125.73 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5946,22 +5852,19 @@
 				(hide yes)
 			)
 		)
-		(property "Description" "Generic connector, single row, 01x01, script generated"
-			(at 77.47 119.38 0)
+		(property "Description" "Mounting Hole without connection"
+			(at 53.34 125.73 0)
 			(effects
 				(font
 					(size 1.27 1.27)
 				)
 				(hide yes)
 			)
-		)
-		(pin "1"
-			(uuid "262b286e-4a0f-4919-bb31-31094278775e")
 		)
 		(instances
 			(project "code of claw translator"
 				(path "/c0ceec49-eb4a-44f5-b884-86eb350cd5f2"
-					(reference "J29")
+					(reference "H7")
 					(unit 1)
 				)
 			)
@@ -6111,73 +6014,6 @@
 			(project "code of claw translator"
 				(path "/c0ceec49-eb4a-44f5-b884-86eb350cd5f2"
 					(reference "J23")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "Connector:Conn_01x01_Socket")
-		(at 77.47 124.46 0)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(fields_autoplaced yes)
-		(uuid "6310484d-860b-4a10-b6f8-32ab8e261fdb")
-		(property "Reference" "J30"
-			(at 78.74 123.1899 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Value" "Conn_01x01_Socket"
-			(at 78.74 125.7299 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Footprint" "Connector_PinSocket_2.54mm:PinSocket_1x01_P2.54mm_Vertical"
-			(at 77.47 124.46 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" "~"
-			(at 77.47 124.46 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "Generic connector, single row, 01x01, script generated"
-			(at 77.47 124.46 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "acd61377-4b4b-4398-a741-53e9bc2e673a")
-		)
-		(instances
-			(project "code of claw translator"
-				(path "/c0ceec49-eb4a-44f5-b884-86eb350cd5f2"
-					(reference "J30")
 					(unit 1)
 				)
 			)
@@ -6707,17 +6543,17 @@
 		)
 	)
 	(symbol
-		(lib_id "Connector:Conn_01x01_Socket")
-		(at 77.47 114.3 0)
+		(lib_id "Mechanical:MountingHole")
+		(at 31.75 133.35 0)
 		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
+		(exclude_from_sim yes)
+		(in_bom no)
 		(on_board yes)
 		(dnp no)
 		(fields_autoplaced yes)
-		(uuid "85e3ce0f-e0ff-4fff-8d4b-a65ed3a71d58")
-		(property "Reference" "J28"
-			(at 78.74 113.0299 0)
+		(uuid "882b3386-98ab-4d9c-b947-3a4eeae5f9ed")
+		(property "Reference" "H6"
+			(at 34.29 132.0799 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -6725,8 +6561,8 @@
 				(justify left)
 			)
 		)
-		(property "Value" "Conn_01x01_Socket"
-			(at 78.74 115.5699 0)
+		(property "Value" "MountingHole"
+			(at 34.29 134.6199 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -6734,8 +6570,8 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Connector_PinSocket_2.54mm:PinSocket_1x01_P2.54mm_Vertical"
-			(at 77.47 114.3 0)
+		(property "Footprint" "MountingHole:MountingHole_3.2mm_M3"
+			(at 31.75 133.35 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -6744,7 +6580,7 @@
 			)
 		)
 		(property "Datasheet" "~"
-			(at 77.47 114.3 0)
+			(at 31.75 133.35 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -6752,22 +6588,19 @@
 				(hide yes)
 			)
 		)
-		(property "Description" "Generic connector, single row, 01x01, script generated"
-			(at 77.47 114.3 0)
+		(property "Description" "Mounting Hole without connection"
+			(at 31.75 133.35 0)
 			(effects
 				(font
 					(size 1.27 1.27)
 				)
 				(hide yes)
 			)
-		)
-		(pin "1"
-			(uuid "1d168e25-9a16-4274-ba2d-6b711d80b489")
 		)
 		(instances
 			(project "code of claw translator"
 				(path "/c0ceec49-eb4a-44f5-b884-86eb350cd5f2"
-					(reference "J28")
+					(reference "H6")
 					(unit 1)
 				)
 			)
@@ -7260,17 +7093,17 @@
 		)
 	)
 	(symbol
-		(lib_id "Connector:Conn_01x01_Socket")
-		(at 77.47 129.54 0)
+		(lib_id "Mechanical:MountingHole")
+		(at 31.75 125.73 0)
 		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
+		(exclude_from_sim yes)
+		(in_bom no)
 		(on_board yes)
 		(dnp no)
 		(fields_autoplaced yes)
-		(uuid "adf4caa0-bbb8-402c-b50b-df6b095db197")
-		(property "Reference" "J31"
-			(at 78.74 128.2699 0)
+		(uuid "ae607abb-e5e7-44ef-a76e-991f844710c4")
+		(property "Reference" "H5"
+			(at 34.29 124.4599 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -7278,8 +7111,8 @@
 				(justify left)
 			)
 		)
-		(property "Value" "Conn_01x01_Socket"
-			(at 78.74 130.8099 0)
+		(property "Value" "MountingHole"
+			(at 34.29 126.9999 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -7287,8 +7120,8 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Connector_PinSocket_2.54mm:PinSocket_1x01_P2.54mm_Vertical"
-			(at 77.47 129.54 0)
+		(property "Footprint" "MountingHole:MountingHole_3.2mm_M3"
+			(at 31.75 125.73 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -7297,7 +7130,7 @@
 			)
 		)
 		(property "Datasheet" "~"
-			(at 77.47 129.54 0)
+			(at 31.75 125.73 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -7305,22 +7138,19 @@
 				(hide yes)
 			)
 		)
-		(property "Description" "Generic connector, single row, 01x01, script generated"
-			(at 77.47 129.54 0)
+		(property "Description" "Mounting Hole without connection"
+			(at 31.75 125.73 0)
 			(effects
 				(font
 					(size 1.27 1.27)
 				)
 				(hide yes)
 			)
-		)
-		(pin "1"
-			(uuid "f9bac951-a60e-44bf-afe8-44dd9fa5f666")
 		)
 		(instances
 			(project "code of claw translator"
 				(path "/c0ceec49-eb4a-44f5-b884-86eb350cd5f2"
-					(reference "J31")
+					(reference "H5")
 					(unit 1)
 				)
 			)
@@ -7722,17 +7552,17 @@
 		)
 	)
 	(symbol
-		(lib_id "Connector:Conn_01x01_Socket")
-		(at 77.47 109.22 0)
+		(lib_id "Mechanical:MountingHole")
+		(at 53.34 133.35 0)
 		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
+		(exclude_from_sim yes)
+		(in_bom no)
 		(on_board yes)
 		(dnp no)
 		(fields_autoplaced yes)
-		(uuid "ed790cc5-2996-4cbf-92e3-ab686694be1a")
-		(property "Reference" "J11"
-			(at 78.74 107.9499 0)
+		(uuid "ddb73516-7e65-4298-b9f7-6929d04458f1")
+		(property "Reference" "H8"
+			(at 55.88 132.0799 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -7740,8 +7570,8 @@
 				(justify left)
 			)
 		)
-		(property "Value" "Conn_01x01_Socket"
-			(at 78.74 110.4899 0)
+		(property "Value" "MountingHole"
+			(at 55.88 134.6199 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -7749,8 +7579,8 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Connector_PinSocket_2.54mm:PinSocket_1x01_P2.54mm_Vertical"
-			(at 77.47 109.22 0)
+		(property "Footprint" "MountingHole:MountingHole_3.2mm_M3"
+			(at 53.34 133.35 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -7759,7 +7589,7 @@
 			)
 		)
 		(property "Datasheet" "~"
-			(at 77.47 109.22 0)
+			(at 53.34 133.35 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -7767,22 +7597,19 @@
 				(hide yes)
 			)
 		)
-		(property "Description" "Generic connector, single row, 01x01, script generated"
-			(at 77.47 109.22 0)
+		(property "Description" "Mounting Hole without connection"
+			(at 53.34 133.35 0)
 			(effects
 				(font
 					(size 1.27 1.27)
 				)
 				(hide yes)
 			)
-		)
-		(pin "1"
-			(uuid "fca796a7-bca2-4158-9dba-5bd230264298")
 		)
 		(instances
-			(project ""
+			(project "code of claw translator"
 				(path "/c0ceec49-eb4a-44f5-b884-86eb350cd5f2"
-					(reference "J11")
+					(reference "H8")
 					(unit 1)
 				)
 			)
